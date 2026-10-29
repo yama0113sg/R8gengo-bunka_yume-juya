@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>漱石の生涯 視聴ワーク</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f6f1e6; --card:#fffdf8; --ink:#2b2622; --sub:#6f665c; --line:#e2d8c6;
+  --ai:#1f3a5f; --ai2:#2f5a8a; --aiSoft:#e7edf5;
+  --ok:#2e7d4f; --okSoft:#e4f2e8; --ng:#a8323a; --ngSoft:#f7e4e4; --gold:#b8892b;
+  --mincho:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --gothic:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--gothic);-webkit-text-size-adjust:100%}
+body{line-height:1.75;font-size:17px;padding-bottom:80px;overflow-x:hidden}
+rt{font-size:.55em;color:var(--sub)}
+.wrap{max-width:820px;margin:0 auto;padding:0 16px}
+header.top{padding:28px 16px 8px}
+.kicker{font-size:13px;letter-spacing:.15em;color:var(--sub)}
+h1{font-family:var(--mincho);font-size:30px;margin:4px 0 6px;letter-spacing:.04em}
+.lead{color:var(--sub);font-size:15px;margin:0}
+.me{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 4px}
+.me label{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--sub)}
+.me input{font:inherit;font-size:16px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);width:5.5em}
+.me input.nm{width:11em}
+
+nav.tabs{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-bottom:1px solid var(--line);margin-top:14px}
+nav.tabs .wrap{display:flex;gap:6px;padding-top:8px;padding-bottom:8px;align-items:center}
+nav.tabs button{flex:1;font:inherit;font-size:15px;font-weight:700;padding:10px 6px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--sub);cursor:pointer}
+nav.tabs button.on{background:var(--ai);color:#fff;border-color:var(--ai)}
+.prog{height:4px;background:var(--line);border-radius:4px;overflow:hidden;margin:0 16px 8px;max-width:788px}
+@media(min-width:821px){.prog{margin:0 auto 8px}}
+.prog i{display:block;height:100%;background:var(--gold);width:0;transition:width .4s}
+
+section.pane{display:none;padding-top:18px}
+section.pane.on{display:block}
+.note{background:var(--aiSoft);border-radius:12px;padding:12px 16px;font-size:15px;color:var(--ai);margin:0 0 18px}
+
+.ch{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 18px 8px;margin:0 0 18px}
+.chHead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:12px}
+.chHead h2{font-family:var(--mincho);font-size:22px;margin:0}
+.chHead h2 small{font-size:14px;color:var(--sub);margin-right:8px;font-family:var(--gothic)}
+.time{font-size:13px;color:var(--sub);white-space:nowrap}
+.time a{color:var(--ai2)}
+.q{margin:0 0 18px}
+.qt{font-weight:700;margin:0 0 8px}
+.qt b{color:var(--gold);margin-right:6px}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:560px){.choices{grid-template-columns:1fr}}
+.choices button{font:inherit;font-size:16px;text-align:left;padding:12px 14px;min-height:52px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;line-height:1.5}
+.choices button:disabled{cursor:default}
+.choices button.right{background:var(--okSoft);border-color:var(--ok);color:var(--ok);font-weight:700}
+.choices button.wrong{background:var(--ngSoft);border-color:var(--ng);color:var(--ng)}
+.choices button.dim{opacity:.5}
+.fb{display:none;margin-top:8px;font-size:15px;padding:10px 14px;border-radius:10px;background:#faf6ec;border-left:4px solid var(--gold)}
+.fb.show{display:block}
+.fb .mark{font-weight:700;margin-right:6px}
+.fb .mark.o{color:var(--ok)} .fb .mark.x{color:var(--ng)}
+
+.mood{border-top:1px dashed var(--line);padding:14px 0 10px;margin-top:4px}
+.mood .qt{color:var(--ai)}
+.scale{display:flex;gap:3px;margin:6px 0 4px}
+.scale button{flex:1;min-width:0;font:inherit;font-size:14px;font-weight:700;padding:10px 0;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--sub);cursor:pointer}
+.scale button.neg{color:#4a6c96} .scale button.pos{color:#b06a1c}
+.scale button.on{color:#fff!important}
+.scale button.on.neg{background:#4a6c96;border-color:#4a6c96}
+.scale button.on.pos{background:#c47a22;border-color:#c47a22}
+.scale button.on.zero{background:#6f665c;border-color:#6f665c}
+.scaleLbl{display:flex;justify-content:space-between;font-size:12px;color:var(--sub)}
+textarea,input.line{width:100%;font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);resize:vertical}
+input.line{margin-top:8px}
+
+h3.sec{font-family:var(--mincho);font-size:21px;margin:8px 0 10px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin:0 0 18px}
+.graphWrap{overflow:hidden}
+svg.graph{width:100%;height:auto;display:block}
+.hint{font-size:14px;color:var(--sub)}
+.opt{display:grid;gap:8px}
+.opt button{font:inherit;font-size:16px;text-align:left;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+.opt button.on{border-color:var(--ai);background:var(--aiSoft);color:var(--ai);font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.chips button{font:inherit;font-size:14px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--sub);cursor:pointer}
+.chips button.on{background:var(--ai);border-color:var(--ai);color:#fff}
+.more{border:1px dashed var(--gold);background:#fffaf0}
+.more summary{cursor:pointer;font-weight:700;color:var(--gold)}
+.big{font:inherit;font-size:17px;font-weight:700;padding:14px 20px;border-radius:12px;border:0;background:var(--ai);color:#fff;cursor:pointer;width:100%}
+.big.sub{background:#fff;color:var(--ai);border:1px solid var(--ai)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1;min-width:200px}
+.check{list-style:none;padding:0;margin:0 0 14px}
+.check li{padding:6px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px}
+.check li span:last-child{font-weight:700}
+.check .ok{color:var(--ok)} .check .ng{color:var(--ng)}
+pre.out{white-space:pre-wrap;word-break:break-all;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;font-size:13px;max-height:260px;overflow:auto;font-family:var(--gothic)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:15px;opacity:0;transition:.3s;pointer-events:none;z-index:50}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.next{margin:6px 0 24px}
+.reset{background:none;border:0;color:var(--sub);text-decoration:underline;font:inherit;font-size:13px;cursor:pointer;margin-top:30px}
+</style>
+</head>
+<body>
+
+<header class="top wrap">
+  <div class="kicker">言語文化　夏目漱石「夢十夜」導入</div>
+  <h1>夏目漱石の生涯　視聴ワーク</h1>
+  <p class="lead">動画「大人の国語便覧　夏目漱石の生涯」を見ながら取り組みます。最後にまとめをコピーして、ロイロノートで提出します。</p>
+  <div class="me">
+    <label>組 <input id="kumi" inputmode="numeric" autocomplete="off"></label>
+    <label>番号 <input id="ban" inputmode="numeric" autocomplete="off"></label>
+    <label>氏名 <input id="name" class="nm" autocomplete="off"></label>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="wrap">
+    <button data-tab="watch" class="on">① 見ながら</button>
+    <button data-tab="after">② 見た後に</button>
+    <button data-tab="submit">③ 提出</button>
+  </div>
+  <div class="prog"><i id="progBar"></i></div>
+</nav>
+
+<main class="wrap">
+  <section class="pane on" id="pane-watch">
+    <p class="note">章ごとに、聞き取り問題に答えます。2章からは、その時期の漱石の<b>心の状態</b>を −5〜+5 で選び、理由を一言書きます（正解はありません）。</p>
+    <div id="chapters"></div>
+    <div class="next"><button class="big" data-go="after">② 見た後に へ進む</button></div>
+  </section>
+
+  <section class="pane" id="pane-after">
+    <h3 class="sec">漱石の人生グラフ</h3>
+    <div class="box">
+      <div class="graphWrap"><svg class="graph" id="graph" viewBox="0 0 700 330" role="img" aria-label="漱石の心の状態の折れ線グラフ"></svg></div>
+      <p class="hint" id="graphHint"></p>
+    </div>
+
+    <h3 class="sec">「夢十夜」は、どこに入る？</h3>
+    <div class="box">
+      <p style="margin-top:0">「夢十夜」は、<b>1908年（明治41年）</b>に朝日新聞に連載された作品です。漱石の人生のどの時期にあたるでしょうか。</p>
+      <div class="opt" id="yumeOpt"></div>
+      <div class="fb" id="yumeFb"></div>
+    </div>
+
+    <div class="box">
+      <p class="qt" style="margin-top:0">人生グラフを見ながら予想しよう。この時期の漱石は、どんな「夢」を書いたと思いますか。</p>
+      <p class="hint" style="margin:0 0 6px">「夢十夜」は十の夢の話です。いくつかの夜は「こんな夢を見た。」という一文で始まります。</p>
+      <div class="chips" id="yumeChips"></div>
+      <textarea id="yumeGuess" rows="3" placeholder="例：〇〇な夢を書いたと思う。なぜなら、このころの漱石は……"></textarea>
+    </div>
+    <div class="next"><button class="big" data-go="submit">③ 提出 へ進む</button></div>
+  </section>
+
+  <section class="pane" id="pane-submit">
+    <h3 class="sec">一番印象に残ったエピソード</h3>
+    <div class="box">
+      <div class="opt" id="epOpt"></div>
+      <input class="line" id="epOther" placeholder="「その他」を選んだ人は、ここに書く" style="display:none">
+      <p class="qt" style="margin:14px 0 6px">そのエピソードが印象に残った理由</p>
+      <textarea id="epWhy" rows="3" placeholder="例：〜〜なのに〜〜したところが意外だった。"></textarea>
+    </div>
+
+    <details class="box more" id="moreBox">
+      <summary>もう一歩（時間がある人）</summary>
+      <p class="qt" style="margin:12px 0 6px">A．漱石は、安定した大学の先生の職を辞めて、新聞社の専属作家になりました。あなたはこの決断をどう考えますか。自分ならどうするかもふくめて書こう。</p>
+      <textarea id="moreA" rows="3"></textarea>
+      <p class="qt" style="margin:12px 0 6px">B．漱石の人生で「孤独」が感じられる場面を二つ挙げ、二つに共通することを考えよう。</p>
+      <textarea id="moreB" rows="3"></textarea>
+    </details>
+
+    <h3 class="sec">提出</h3>
+    <div class="box">
+      <ul class="check" id="checkList"></ul>
+      <pre class="out" id="out"></pre>
+      <div class="row" style="margin-top:12px">
+        <button class="big" id="copyBtn">まとめをコピーする</button>
+      </div>
+      <p class="hint" style="margin-bottom:0">コピーしたら、ロイロノートでテキストカードを作って貼りつけ、提出箱に出してください。人生グラフは、② の画面をスクリーンショットして一緒に出してもかまいません。</p>
+    </div>
+    <button class="reset" id="resetBtn">すべての答えを消して最初からやり直す</button>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const VIDEO = "https://www.youtube.com/watch?v=j3_XzxMAGTE";
+const r = (k, y) => `<ruby>${k}<rt>${y}</rt></ruby>`;
+const SHIKI = r("正岡子規","まさおかしき"), YONE = r("米山保三郎","よねやまやすさぶろう"),
+      KYOSHI = r("高浜虚子","たかはまきょし"), KYOKO = r("中根鏡子","なかねきょうこ"),
+      YAKUMO = r("小泉八雲","こいずみやくも");
+
+// sec: 動画の開始秒。mood: その章で心の状態を答えるか
+const CHAPTERS = [
+  {no:1, title:"イントロダクション", from:"0:00", to:"1:46", sec:0, mood:false, qs:[
+    {q:"動画の最初に紹介された三つの作品の組み合わせは？",
+     c:["『羅生門』『鼻』『蜘蛛の糸』","『吾輩は猫である』『坊っちゃん』『こころ』","『舞姫』『高瀬舟』『山椒大夫』","『走れメロス』『人間失格』『斜陽』"], a:1,
+     n:"『羅生門』は芥川龍之介、『舞姫』は森鷗外、『走れメロス』は太宰治の作品です。芥川は漱石に作品をほめられたことがきっかけで世に出ました。"},
+    {q:"『吾輩は猫である』の猫のモデルになった、漱石の家の猫について正しいものは？",
+     c:["「タマ」と呼ばれてかわいがられた","正岡子規からもらった","名前がつけられていなかった","ロンドンから連れて帰った"], a:2,
+     n:"作品の書き出し「吾輩は猫である。名前はまだ無い。」のとおり、実際の猫にも名前がありませんでした。"}
+  ]},
+  {no:2, title:"若き日の漱石", from:"1:46", to:"12:26", sec:106, mood:true, qs:[
+    {q:"漱石が生まれたのは何年？",
+     c:["1867年（慶応3年）","1868年（明治元年）","1872年（明治5年）","1889年（明治22年）"], a:0,
+     n:"江戸時代の最後の年です。翌年が明治元年なので、漱石の年齢は「明治何年」の数字とほぼ同じになります。"},
+    {q:"幼いころの漱石について正しいものは？",
+     c:["一人っ子として大切に育てられた","生まれてまもなく、よその家に出された","武士の家の長男として期待された","子どものころから英語を習っていた"], a:1,
+     n:`里子や養子に出され、家族の愛情を感じにくい少年時代を過ごしました。心の支えは母・${r("千枝","ちえ")}でした。`},
+    {q:`漱石に文学の道へ進むことを決めさせた、予備門時代の友人は？`,
+     c:[YONE, SHIKI, KYOSHI, r("真鍋嘉一郎","まなべかいちろう")], a:0,
+     n:"「すぐれた文学作品は永遠に残る」という米山の言葉が、漱石の進路を決めました。"},
+    {q:"ペンネーム「漱石」を、もともと使っていたのは誰？",
+     c:[YONE, r("森鷗外","もりおうがい"), KYOSHI, SHIKI], a:3,
+     n:`子規から譲り受けた名前です。中国の故事「${r("漱石枕流","そうせきちんりゅう")}」から取られ、「負けおしみが強い・変わり者」という意味があります。`}
+  ]},
+  {no:3, title:"松山での漱石", from:"12:26", to:"17:54", sec:746, mood:true, qs:[
+    {q:"松山（愛媛県）で漱石が就いた仕事は？",
+     c:["新聞記者","中学校の英語教師","医者","お寺の僧"], a:1,
+     n:"愛媛県尋常中学校（今の高校にあたる）の英語教師として赴任しました。"},
+    {q:"松山での教師生活がもとになった作品は？",
+     c:["『こころ』","『三四郎』","『坊っちゃん』","『明暗』"], a:2,
+     n:"『坊っちゃん』は、東京から四国の中学校に赴任した若い教師の物語です。"},
+    {q:"松山の漱石の下宿に転がりこみ、一緒に暮らしたのは？",
+     c:[SHIKI, YONE, KYOKO, YAKUMO], a:0,
+     n:`病気の療養中だった子規と暮らし、俳句の会を通じて${KYOSHI}たちとも交流が生まれました。`},
+    {q:"漱石が見合いで結婚した相手は？",
+     c:[r("与謝野晶子","よさのあきこ"), r("樋口一葉","ひぐちいちよう"), KYOKO, r("平塚らいてう","ひらつからいちょう")], a:2,
+     n:"見合いはとんとん拍子に進みました。ほかの三人は、同じ時代に活躍した女性の文学者・思想家です。"}
+  ]},
+  {no:4, title:"熊本での漱石", from:"17:54", to:"20:33", sec:1074, mood:true, qs:[
+    {q:"熊本で漱石が勤めた学校は？",
+     c:["東京帝国大学","第五高等学校","松山中学校","早稲田大学"], a:1,
+     n:"「五高」と呼ばれた学校で、教授として安定した生活を送りました。"},
+    {q:"熊本時代、若くして亡くなったことを知り、漱石が自分の生き方を問い直すきっかけになった友人は？",
+     c:[SHIKI, KYOSHI, YONE, YAKUMO], a:2,
+     n:"文学の道を勧めてくれた米山は、まだ20代の若さで亡くなりました。"}
+  ]},
+  {no:5, title:"ロンドンでの漱石", from:"20:33", to:"26:18", sec:1233, mood:true, qs:[
+    {q:"漱石はどのような立場でイギリスへ渡った？",
+     c:["朝日新聞の特派員","自分のお金で行く留学生","文部省の留学生","外交官"], a:2,
+     n:"国の命令で、英語の研究のために留学しました。"},
+    {q:"ロンドンでの漱石の生活として正しいものは？",
+     c:["友人に囲まれてにぎやかに過ごした","物価の高さと孤独に苦しみ、下宿にこもって勉強した","英語の講演が評判になり人気者になった","イギリスで小説家としてデビューした"], a:1,
+     n:"研究したいことと命じられたことのずれにも悩み、極限まで勉強に打ちこみました。"},
+    {q:"このころ日本では、漱石についてどんなうわさが流れた？",
+     c:["「漱石は発狂した」","「イギリスで大学教授になった」","「イギリス人と結婚した」","「大金持ちになった」"], a:0,
+     n:`研究報告がとどこおり、そのようなうわさが流れるほど追いつめられていました。${r("神経衰弱","しんけいすいじゃく")}は帰国後も続きます。`},
+    {q:"帰国後、漱石は東京帝国大学で誰の後任として英文学を教えた？",
+     c:[r("森鷗外","もりおうがい"), r("坪内逍遥","つぼうちしょうよう"), r("福沢諭吉","ふくざわゆきち"), YAKUMO], a:3,
+     n:"ラフカディオ・ハーン（小泉八雲）は『怪談』の作者です。人気の先生の後任で、漱石は苦労しました。"}
+  ]},
+  {no:6, title:"文豪の誕生", from:"26:18", to:"33:09", sec:1578, mood:true, qs:[
+    {q:"『吾輩は猫である』を書くよう勧めたのは？",
+     c:[SHIKI, KYOSHI, KYOKO, YONE], a:1,
+     n:"子規はすでに1902年に亡くなっていました。子規の後を継いで俳句雑誌を出していた虚子が、漱石に執筆を勧めました。"},
+    {q:"『猫』が大ヒットしたあと、漱石が選んだ道は？",
+     c:["大学の先生を続けながら、趣味で小説を書いた","大学の職を辞めて、朝日新聞社の専属作家になった","政治家になった","もう一度ロンドンへ留学した"], a:1,
+     n:"1907年（明治40年）、40歳のときです。安定した地位よりも、書くことに打ちこめる環境を選びました。"}
+  ]},
+  {no:7, title:"胃を病む漱石", from:"33:09", to:"36:21", sec:1989, mood:true, qs:[
+    {q:"漱石を苦しめ続けた病気は？",
+     c:["結核","心臓病",r("胃潰瘍","いかいよう"),"骨折"], a:2,
+     n:"ちなみに、正岡子規の命をうばったのは結核でした。"},
+    {q:"1910年（明治43年）、漱石が大量の血をはき、生死の境をさまよった場所は？",
+     c:["熊本","ロンドン","松山",`伊豆の${r("修善寺","しゅぜんじ")}`], a:3,
+     n:"「修善寺の大患」と呼ばれます。この体験のあと、漱石の作品は人間の内面をより深く見つめるものになっていきます。"},
+    {q:"このころ漱石を襲った家族の悲しみは？",
+     c:[`幼い末娘・${r("雛子","ひなこ")}の死`,"妻との離婚","家の火事","兄の破産"], a:0,
+     n:"漱石はこの悲しみを、のちの作品の中にも書きとめています。"}
+  ]},
+  {no:8, title:"漱石の最後", from:"36:21", to:"46:08", sec:2181, mood:true, qs:[
+    {q:"自分の過去や弱さを見つめて書いた、自伝的な作品は？",
+     c:["『坊っちゃん』",`『${r("道草","みちくさ")}』`,"『吾輩は猫である』","『三四郎』"], a:1,
+     n:"自分の欠点も客観的に描く、新しい書き方に挑みました。"},
+    {q:"晩年の漱石がめざした境地を表す四字熟語は？",
+     c:["以心伝心","一期一会",r("則天去私","そくてんきょし"),"自業自得"], a:2,
+     n:"「天に則って私を去る」、つまり小さな自分へのこだわりを捨てて、大きな自然の道理に従うという意味です。"},
+    {q:"漱石の最期として正しいものは？",
+     c:["1912年、明治の終わりとともに亡くなった",`1916年（大正5年）、『${r("明暗","めいあん")}』を書いている途中で亡くなった`,"1926年、すべての作品を書き終えて亡くなった","1905年、『猫』を発表した直後に亡くなった"], a:1,
+     n:"49歳でした。『明暗』は未完のまま残されています。"}
+  ]}
+];
+
+const MOOD_CH = CHAPTERS.filter(c => c.mood);
+const YUME_OPTS = [
+  {t:"ロンドン留学中（1900〜1902年ごろ）", ok:false},
+  {t:"朝日新聞社に入ったあと、修善寺の大患より前（1907〜1910年）", ok:true},
+  {t:"修善寺の大患のあと（1910年〜）", ok:false},
+  {t:"『明暗』を書いていた最晩年（1916年）", ok:false}
+];
+const YUME_NOTE = "1908年の漱石は41歳。大学を辞めて職業作家になり、毎日の新聞に作品を書いていたころです。";
+const YUME_CHIPS = ["不安な夢","さびしい夢","こわい夢","なつかしい夢","ふしぎな夢","後悔の夢"];
+const EPISODES = [
+  "幼いころ、よその家に出されたこと",
+  "正岡子規との友情と「漱石」という名前",
+  "米山保三郎の言葉と、その早すぎる死",
+  "松山での教師生活と、子規との同居",
+  "ロンドンでの孤独と「発狂した」といううわさ",
+  "猫から生まれた『吾輩は猫である』の大ヒット",
+  "大学を辞めて新聞社の作家になったこと",
+  "修善寺の大患",
+  "末娘・雛子の死",
+  "『明暗』を書きかけたまま亡くなったこと",
+  "その他"
+];
+
+const KEY = "soseki_work_v1";
+let S = {kumi:"",ban:"",name:"",ans:{},mood:{},why:{},yume:null,yumeChips:[],yumeGuess:"",ep:null,epOther:"",epWhy:"",moreA:"",moreB:"",tab:"watch"};
+try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s) S = Object.assign(S, s); }catch(e){}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+
+const $ = id => document.getElementById(id);
+const plain = h => h.replace(/<rt>.*?<\/rt>/g,"").replace(/<[^>]+>/g,"");
+const esc = s => s.replace(/[&<>"]/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+const totalQ = CHAPTERS.reduce((n,c)=>n+c.qs.length,0);
+
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toast.h); toast.h=setTimeout(()=>t.classList.remove("show"),1800); }
+
+/* ---------- ① 見ながら ---------- */
+function buildChapters(){
+  const root = $("chapters");
+  root.innerHTML = CHAPTERS.map(ch => `
+    <article class="ch" id="ch${ch.no}">
+      <div class="chHead">
+        <h2><small>第${ch.no}章</small>${ch.title}</h2>
+        <span class="time">動画 <a href="${VIDEO}&t=${ch.sec}s" target="_blank" rel="noopener">${ch.from}</a> 〜 ${ch.to}</span>
+      </div>
+      ${ch.qs.map((q,i)=>`
+        <div class="q" data-k="${ch.no}-${i}">
+          <p class="qt"><b>問${i+1}</b>${q.q}</p>
+          <div class="choices">${q.c.map((c,j)=>`<button data-j="${j}">${c}</button>`).join("")}</div>
+          <div class="fb"></div>
+        </div>`).join("")}
+      ${ch.mood ? `
+        <div class="mood" data-ch="${ch.no}">
+          <p class="qt">この時期の漱石の心の状態は？</p>
+          <div class="scale">${[-5,-4,-3,-2,-1,0,1,2,3,4,5].map(v=>`<button data-v="${v}" class="${v<0?"neg":v>0?"pos":"zero"}">${v>0?"+"+v:v}</button>`).join("")}</div>
+          <div class="scaleLbl"><span>とてもつらい</span><span>ふつう</span><span>とても充実</span></div>
+          <input class="line" data-why="${ch.no}" placeholder="理由を一言（例：親友と一緒に暮らせたから）">
+        </div>` : ""}
+    </article>`).join("");
+
+  root.querySelectorAll(".q").forEach(el => {
+    const k = el.dataset.k;
+    el.querySelectorAll(".choices button").forEach(b => b.addEventListener("click", () => {
+      if (S.ans[k] !== undefined) return;
+      S.ans[k] = +b.dataset.j; save(); paintQ(el); updateProg();
+    }));
+    paintQ(el);
+  });
+  root.querySelectorAll(".mood").forEach(el => {
+    const no = el.dataset.ch;
+    el.querySelectorAll(".scale button").forEach(b => b.addEventListener("click", () => {
+      S.mood[no] = +b.dataset.v; save(); paintMood(el); updateProg();
+    }));
+    const inp = el.querySelector("input");
+    inp.value = S.why[no] || "";
+    inp.addEventListener("input", () => { S.why[no] = inp.value; save(); });
+    paintMood(el);
+  });
+}
+function qOf(k){ const [c,i]=k.split("-").map(Number); return CHAPTERS.find(x=>x.no===c).qs[i]; }
+function paintQ(el){
+  const k = el.dataset.k, q = qOf(k), my = S.ans[k];
+  if (my === undefined) return;
+  el.querySelectorAll(".choices button").forEach(b => {
+    const j = +b.dataset.j; b.disabled = true;
+    b.classList.toggle("right", j===q.a);
+    b.classList.toggle("wrong", j===my && j!==q.a);
+    b.classList.toggle("dim", j!==q.a && j!==my);
+  });
+  const fb = el.querySelector(".fb");
+  fb.innerHTML = (my===q.a ? `<span class="mark o">正解</span>` : `<span class="mark x">正解は「${q.c[q.a]}」</span>`) + q.n;
+  fb.classList.add("show");
+}
+function paintMood(el){
+  const v = S.mood[el.dataset.ch];
+  el.querySelectorAll(".scale button").forEach(b => b.classList.toggle("on", v!==undefined && +b.dataset.v===v));
+}
+
+/* ---------- ② 見た後に ---------- */
+function drawGraph(){
+  const W=700,H=330,L=44,R=16,T=20,B=58, n=MOOD_CH.length;
+  const x = i => L + (W-L-R)*(i+.5)/n, y = v => T + (H-T-B)*(5-v)/10;
+  let s = "";
+  for (let v=-5; v<=5; v++){
+    s += `<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="${v===0?"#b9ad98":"#ece4d4"}" stroke-width="${v===0?1.5:1}"/>`;
+    if (v%5===0) s += `<text x="${L-8}" y="${y(v)+4}" font-size="12" text-anchor="end" fill="#6f665c">${v>0?"+"+v:v}</text>`;
+  }
+  const yumeIdx = MOOD_CH.findIndex(c=>c.no===6);
+  if (S.yume !== null && YUME_OPTS[S.yume].ok){
+    s += `<line x1="${x(yumeIdx)+18}" x2="${x(yumeIdx)+18}" y1="${T}" y2="${H-B}" stroke="#b8892b" stroke-width="2" stroke-dasharray="5 4"/>`;
+    s += `<text x="${x(yumeIdx)+22}" y="${T+12}" font-size="13" fill="#b8892b" font-weight="700">夢十夜（1908）</text>`;
+  }
+  let path = "", pts = "";
+  MOOD_CH.forEach((c,i) => {
+    const v = S.mood[c.no];
+    const lbl = c.title.replace("での漱石","").replace("の漱石","").replace("漱石の","");
+    s += `<text x="${x(i)}" y="${H-B+22}" font-size="13" text-anchor="middle" fill="#2b2622">${lbl}</text>`;
+    s += `<text x="${x(i)}" y="${H-B+40}" font-size="11" text-anchor="middle" fill="#6f665c">第${c.no}章</text>`;
+    if (v === undefined){ path += " "; return; }
+    path += (path.trim()==="" || path.endsWith(" ") ? " M" : " L") + x(i) + " " + y(v);
+    pts += `<circle cx="${x(i)}" cy="${y(v)}" r="6" fill="${v<0?"#4a6c96":v>0?"#c47a22":"#6f665c"}"/>`;
+  });
+  s += `<path d="${path.trim()}" fill="none" stroke="#1f3a5f" stroke-width="2.5" stroke-linejoin="round"/>` + pts;
+  $("graph").innerHTML = s;
+  const left = MOOD_CH.filter(c=>S.mood[c.no]===undefined).length;
+  $("graphHint").textContent = left ? `まだ選んでいない章が ${left} つあります。① に戻って選ぶと、グラフがつながります。` : "あなたが選んだ「心の状態」です。上がり下がりの大きいところに注目してみよう。";
+}
+function buildAfter(){
+  $("yumeOpt").innerHTML = YUME_OPTS.map((o,i)=>`<button data-i="${i}">${o.t}</button>`).join("");
+  $("yumeOpt").querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    S.yume = +b.dataset.i; save(); paintYume(); drawGraph(); updateProg();
+  }));
+  paintYume();
+  $("yumeChips").innerHTML = YUME_CHIPS.map(c=>`<button>${c}</button>`).join("");
+  $("yumeChips").querySelectorAll("button").forEach(b => {
+    b.classList.toggle("on", S.yumeChips.includes(b.textContent));
+    b.addEventListener("click", () => {
+      const t=b.textContent, i=S.yumeChips.indexOf(t);
+      i<0 ? S.yumeChips.push(t) : S.yumeChips.splice(i,1);
+      b.classList.toggle("on", i<0); save();
+    });
+  });
+  bindText("yumeGuess");
+}
+function paintYume(){
+  $("yumeOpt").querySelectorAll("button").forEach(b => b.classList.toggle("on", +b.dataset.i===S.yume));
+  const fb = $("yumeFb");
+  if (S.yume === null){ fb.classList.remove("show"); return; }
+  const ok = YUME_OPTS[S.yume].ok;
+  fb.innerHTML = (ok ? `<span class="mark o">正解</span>` : `<span class="mark x">もう一度考えよう</span>`) + (ok ? YUME_NOTE : "「夢十夜」は1908年の作品です。第6章・第7章の年号をヒントにしよう。");
+  fb.classList.add("show");
+}
+
+/* ---------- ③ 提出 ---------- */
+function buildSubmit(){
+  $("epOpt").innerHTML = EPISODES.map((e,i)=>`<button data-i="${i}">${e}</button>`).join("");
+  $("epOpt").querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    S.ep = +b.dataset.i; save(); paintEp(); updateProg();
+  }));
+  paintEp();
+  ["epOther","epWhy","moreA","moreB"].forEach(bindText);
+  $("copyBtn").addEventListener("click", copyOut);
+  $("resetBtn").addEventListener("click", () => {
+    if (!confirm("答えをすべて消して、最初からやり直します。よろしいですか？")) return;
+    try{ localStorage.removeItem(KEY); }catch(e){}
+    location.reload();
+  });
+}
+function paintEp(){
+  $("epOpt").querySelectorAll("button").forEach(b => b.classList.toggle("on", +b.dataset.i===S.ep));
+  $("epOther").style.display = S.ep === EPISODES.length-1 ? "block" : "none";
+}
+function bindText(id){
+  const el = $(id); el.value = S[id] || "";
+  el.addEventListener("input", () => { S[id] = el.value; save(); if (id!=="moreA"&&id!=="moreB") updateProg(); });
+}
+
+function score(){
+  let ok=0, done=0;
+  CHAPTERS.forEach(c=>c.qs.forEach((q,i)=>{ const m=S.ans[c.no+"-"+i]; if(m!==undefined){done++; if(m===q.a) ok++;} }));
+  return {ok, done};
+}
+function buildOut(){
+  const sc = score(), L = [];
+  L.push("【夏目漱石の生涯　視聴ワーク】");
+  L.push(`${S.kumi||"　"}組 ${S.ban||"　"}番　${S.name||"（氏名未入力）"}`);
+  L.push("");
+  L.push(`■ 聞き取り問題　${sc.ok} / ${totalQ} 問正解（解答 ${sc.done} 問）`);
+  CHAPTERS.forEach(c => {
+    const marks = c.qs.map((q,i)=>{ const m=S.ans[c.no+"-"+i]; return m===undefined?"－":(m===q.a?"○":"×"); }).join("");
+    L.push(`　第${c.no}章 ${c.title}：${marks}`);
+  });
+  L.push("");
+  L.push("■ 漱石の人生グラフ（心の状態 −5〜+5）");
+  MOOD_CH.forEach(c => {
+    const v = S.mood[c.no], w = (S.why[c.no]||"").trim();
+    L.push(`　第${c.no}章 ${c.title}：${v===undefined?"未回答":(v>0?"+"+v:v)}${w?"　理由："+w:""}`);
+  });
+  L.push("");
+  L.push("■ 「夢十夜」はどこに入る？");
+  L.push("　" + (S.yume===null ? "未回答" : YUME_OPTS[S.yume].t + (YUME_OPTS[S.yume].ok?"（正解）":"（不正解）")));
+  L.push("■ この時期の漱石が書きそうな夢（予想）");
+  if (S.yumeChips.length) L.push("　キーワード：" + S.yumeChips.join("・"));
+  L.push("　" + ((S.yumeGuess||"").trim() || "未回答"));
+  L.push("");
+  L.push("■ 一番印象に残ったエピソード");
+  let ep = S.ep===null ? "未回答" : EPISODES[S.ep];
+  if (S.ep === EPISODES.length-1) ep = "その他：" + ((S.epOther||"").trim() || "（未記入）");
+  L.push("　" + ep);
+  L.push("　理由：" + ((S.epWhy||"").trim() || "未回答"));
+  if ((S.moreA||"").trim() || (S.moreB||"").trim()){
+    L.push("");
+    L.push("■ もう一歩");
+    if ((S.moreA||"").trim()) L.push("　A（大学を辞めた決断について）：" + S.moreA.trim());
+    if ((S.moreB||"").trim()) L.push("　B（孤独の場面と共通点）：" + S.moreB.trim());
+  }
+  return L.join("\n");
+}
+function refreshSubmit(){
+  const sc = score(), moodDone = MOOD_CH.filter(c=>S.mood[c.no]!==undefined).length;
+  const items = [
+    ["組・番号・氏名", S.kumi && S.ban && S.name],
+    [`聞き取り問題（${sc.done} / ${totalQ}）`, sc.done===totalQ],
+    [`人生グラフ（${moodDone} / ${MOOD_CH.length}）`, moodDone===MOOD_CH.length],
+    ["夢十夜の時期", S.yume!==null],
+    ["夢の予想", (S.yumeGuess||"").trim()],
+    ["印象に残ったエピソードと理由", S.ep!==null && (S.epWhy||"").trim()]
+  ];
+  $("checkList").innerHTML = items.map(([t,ok])=>`<li><span>${t}</span><span class="${ok?"ok":"ng"}">${ok?"済":"まだ"}</span></li>`).join("");
+  $("out").textContent = buildOut();
+}
+function copyOut(){
+  const text = buildOut();
+  const fallback = () => {
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.setAttribute("readonly",""); ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, text.length);
+    let ok=false; try{ ok = document.execCommand("copy"); }catch(e){}
+    document.body.removeChild(ta);
+    toast(ok ? "コピーしました。ロイロに貼りつけてください" : "コピーできませんでした。下の文を長押しして選んでください");
+  };
+  if (navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(text).then(()=>toast("コピーしました。ロイロに貼りつけてください"), fallback);
+  } else fallback();
+}
+
+/* ---------- 共通 ---------- */
+function updateProg(){
+  const sc = score(), moodDone = MOOD_CH.filter(c=>S.mood[c.no]!==undefined).length;
+  const all = totalQ + MOOD_CH.length + 3;
+  const got = sc.done + moodDone + (S.yume!==null?1:0) + ((S.yumeGuess||"").trim()?1:0) + (S.ep!==null && (S.epWhy||"").trim()?1:0);
+  $("progBar").style.width = (got/all*100) + "%";
+}
+function showTab(t){
+  S.tab = t; save();
+  document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.toggle("on", b.dataset.tab===t));
+  document.querySelectorAll("section.pane").forEach(p=>p.classList.toggle("on", p.id==="pane-"+t));
+  if (t==="after") drawGraph();
+  if (t==="submit") refreshSubmit();
+  window.scrollTo({top:0});
+}
+document.querySelectorAll("nav.tabs button").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.tab)));
+document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.go)));
+["kumi","ban","name"].forEach(id => { const el=$(id); el.value=S[id]||""; el.addEventListener("input",()=>{S[id]=el.value; save();}); });
+
+buildChapters(); buildAfter(); buildSubmit(); updateProg();
+showTab(S.tab || "watch");
+</script>
+</body>
+</html>
