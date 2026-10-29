@@ -74,6 +74,7 @@ svg#scene{width:100%;height:100%;max-height:66vh;display:block;overflow:visible}
     <defs>
       <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2a26"/><stop offset="1" stop-color="#151512"/></linearGradient>
       <radialGradient id="stoneG" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#a7abb2"/><stop offset="1" stop-color="#5d626b"/></radialGradient>
+      <filter id="sunBlur" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="9"/></filter>
       <radialGradient id="sunG" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff5a3c"/><stop offset=".7" stop-color="#d2392a"/><stop offset="1" stop-color="#d2392a" stop-opacity="0"/></radialGradient>
       <radialGradient id="petal" cx=".5" cy=".2" r=".9"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e6ece6"/></radialGradient>
     </defs>
@@ -165,10 +166,12 @@ function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("show");
 const mix = (a,b,t) => "#" + [0,2,4].map(i => Math.round(parseInt(a.substr(i+1,2),16)*(1-t) + parseInt(b.substr(i+1,2),16)*t).toString(16).padStart(2,"0")).join("");
 function setSky(t){ paintSky(mix("#0e1226", "#6a3437", t)); }
 function paintSky(c){ $("sky").setAttribute("fill", c); document.body.style.background = c; }
+// 早送り中は空の明暗の幅を小さくして、強い点滅にならないようにする
+const SKY = {base:0, amp:.9};
 function sunAt(p){
   const x = -40 + 480*p, y = 372 - Math.sin(Math.PI*p)*272;
   $("sun").setAttribute("cx", x); $("sun").setAttribute("cy", y);
-  setSky(Math.sin(Math.PI*p) * .9);
+  setSky(SKY.base + Math.sin(Math.PI*p) * SKY.amp);
 }
 function sunPass(ms){
   return new Promise(res => {
@@ -217,6 +220,7 @@ async function play(){
   $("end").classList.add("hidden"); $("counter").classList.add("hidden");
   $("lily").setAttribute("opacity", 0); $("star").setAttribute("opacity", 0); $("star").classList.remove("on");
   $("flower").setAttribute("transform","translate(200 176) scale(0)"); $("bud").setAttribute("opacity",0);
+  SKY.base = 0; SKY.amp = .9; $("sun").removeAttribute("filter"); $("sun").setAttribute("opacity", 1);
   setMoss(0); sunAt(0);
 
   await say(Q("こんな夢を見た。")); await next();
@@ -244,11 +248,18 @@ async function play(){
   // 数えきれなくなる
   await say(Q(`${KANJO}しても、${KANJO}しても、しつくせないほど赤い日が頭の上を通り越していった。`));
   showCounter(null, 3);
-  for (let i=0; i<46; i++){
-    await sunPass(Math.max(130, 700 - i*24));
-    setMoss(0.17 + i * 0.018);
+  const sun = $("sun");
+  sun.setAttribute("filter", "url(#sunBlur)"); sun.setAttribute("opacity", .55);
+  for (let i=0; i<34; i++){
+    // 1周 350ms 以上（1秒に3回未満）。だんだん速く、空の明暗はだんだん小さく
+    const k = Math.min(1, i/10);
+    SKY.base = .3*k; SKY.amp = .9 - .78*k;
+    await sunPass(Math.max(350, 900 - i*40));
+    setMoss(0.17 + i * 0.025);
   }
-  setSky(0);
+  sun.removeAttribute("filter"); sun.setAttribute("opacity", 1);
+  const from = SKY.base; SKY.base = 0; SKY.amp = .9;
+  await animate(1500, p => setSky(from*(1-p)));
   await say(Q("それでも百年がまだ来ない。")); await next();
   await say(Q("自分は女にだまされたのではなかろうかと思いだした。")); await next();
 
