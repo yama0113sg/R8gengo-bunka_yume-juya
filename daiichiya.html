@@ -96,9 +96,11 @@ svg#scene{width:100%;height:100%;max-height:66vh;display:block;overflow:visible}
       </g>
       <ellipse id="bud" cx="200" cy="160" rx="7" ry="18" fill="#dfe8d8" opacity="0"/>
     </g>
-    <ellipse cx="200" cy="364" rx="70" ry="10" fill="#0b0b09" opacity=".5"/>
-    <path d="M140 364 C 140 300, 260 300, 260 364 Z" fill="url(#stoneG)"/>
-    <g id="moss"></g>
+    <g id="grave" opacity="0" style="transition:opacity 1.6s">
+      <ellipse cx="200" cy="364" rx="70" ry="10" fill="#0b0b09" opacity=".5"/>
+      <path d="M140 364 C 140 300, 260 300, 260 364 Z" fill="url(#stoneG)"/>
+      <g id="moss"></g>
+    </g>
   </svg>
   <div class="counter hidden" id="counter"></div>
 </div>
@@ -221,14 +223,16 @@ async function play(){
   $("lily").setAttribute("opacity", 0); $("star").setAttribute("opacity", 0); $("star").classList.remove("on");
   $("flower").setAttribute("transform","translate(200 176) scale(0)"); $("bud").setAttribute("opacity",0);
   SKY.base = 0; SKY.amp = .9; $("sun").removeAttribute("filter"); $("sun").setAttribute("opacity", 1);
-  setMoss(0); sunAt(0);
+  setMoss(0); sunAt(0); $("grave").setAttribute("opacity", 0);
 
   await say(Q("こんな夢を見た。")); await next();
   await say(N("枕元に座っていると、あおむきに寝た女が、静かな声で言う。") + "<br>" + Q("「もう死にます。」")); await next();
   await say(N("女は、こう頼んだ。") + "<br>" + Q("「百年待っていてください。」")); await next();
   await say(Q("「百年、私の墓のそばに座って待っていてください。きっと会いに来ますから。」")); await next();
   await say(Q("自分は、ただ待っていると答えた。")); await next();
-  await say(N("女は死んだ。男は女を埋め、丸い石を墓にして、そのそばに座った。")); await next();
+  await say(N("女は死んだ。男は女を埋め、丸い石を墓にして、そのそばに座った。"));
+  $("grave").setAttribute("opacity", 1);
+  await next();
   await say(N("日が昇って、沈んだら、一つ。<br>男のかわりに、数えてみましょう。")); await next("待ちはじめる");
 
   // 自分で数える
