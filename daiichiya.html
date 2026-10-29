@@ -141,6 +141,8 @@ try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s) S = Object.a
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const KAN = ["","一","二","三","四","五","六","七","八","九","十"];
+// 一つ〜九つは「つ」をつける。十からは数だけ
+const kazu = n => n<10 ? KAN[n]+"つ" : kan(n);
 const kan = n => n<=10 ? KAN[n] : n<20 ? "十"+KAN[n-10] : KAN[Math.floor(n/10)]+"十"+KAN[n%10];
 // 「」は教科書本文の引用、nar はゲームの語り
 const Q = s => `<span class="q">${s}</span>`, N = s => `<span class="nar">${s}</span>`;
@@ -218,7 +220,7 @@ function setMoss(level){ MOSS.forEach(m => m.e.setAttribute("opacity", m.at < le
 
 function showCounter(n, blur){
   const c = $("counter"); c.classList.remove("hidden");
-  c.innerHTML = (n===null ? "……" : kan(n)+"つ") + "<small>赤い日を数えた数</small>";
+  c.innerHTML = (n===null ? "……" : kazu(n)) + "<small>赤い日を数えた数</small>";
   c.style.filter = blur ? `blur(${blur}px)` : "none";
 }
 
@@ -323,18 +325,18 @@ async function play(){
   await say(N("日が昇って、沈んだら、一つ。<br>男のかわりに、数えてみましょう。")); await next("待ちはじめる");
 
   // 自分で数える
-  for (let n=1; n<=14; n++){
+  for (let n=1; n<=20; n++){
     const go = buttons([["日が昇り、沈む", true, true]]);
     if (n===1) await say(N("ボタンを押すと、日が昇って沈みます。"));
     await go;
-    await sunPass(n < 4 ? 1500 : 1100);
+    await sunPass(n < 4 ? 1500 : n < 10 ? 1000 : 750);
     S.count = n; save();
-    setMoss(n * 0.012);
-    showCounter(n, n>=9 ? (n-8)*0.9 : 0);
+    setMoss(n * 0.008);
+    showCounter(n, n>=13 ? (n-12)*0.7 : 0);
     if (n===1) await say(Q(`大きな赤い日であった。……一つと自分は${KANJO}した。`));
     else if (n===2) await say(Q(`二つとまた${KANJO}をした。`));
-    else if (n===6) await say(N("まだ、百には遠い。"));
-    else if (n===10) await say(N("……いくつまで数えたのだったか。"));
+    else if (n===6) await say(N("百年は、およそ三万六千五百日。まだまだ遠い。"));
+    else if (n===15) await say(N("……いくつまで数えたのだったか。"));
   }
   // 数えきれなくなる
   await say(Q(`${KANJO}しても、${KANJO}しても、しつくせないほど赤い日が頭の上を通り越していった。`));
@@ -381,7 +383,7 @@ async function play(){
 
 function showEnd(){
   const esc = t => t.replace(/[&<>"]/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
-  $("log").innerHTML = `あなたが数えられた赤い日は <b>${kan(Math.max(S.count,1))}つ</b>。そのあとは、数えきれなくなりました。<br>`
+  $("log").innerHTML = `あなたが数えられた赤い日は <b>${kazu(Math.max(S.count,1))}</b>。そのあとは、数えきれなくなりました。<br>`
     + `女に頼まれたとき、あなたは<b>「${S.choice1==="quit"?"待たない":"待つ"}」</b><br>`
     + `だまされたと思ったとき、あなたは<b>「${S.choice==="quit"?"もう待たない":"まだ待つ"}」</b>（理由：${esc(S.why)}）<br>`
     + "男は、どちらのときも待ち続けました。";
