@@ -72,6 +72,9 @@ section.pane.on{display:block}
 .fb .mark{font-weight:700;margin-right:6px}
 .fb .mark.o{color:var(--ok)} .fb .mark.x{color:var(--ng)}
 
+details.extra{border:1px dashed var(--gold);background:#fffaf0;border-radius:12px;padding:10px 14px;margin:0 0 14px}
+details.extra summary{cursor:pointer;font-weight:700;color:var(--gold);padding:4px 0}
+details.extra[open] summary{margin-bottom:10px}
 .mood{border-top:1px dashed var(--line);padding:14px 0 10px;margin-top:4px}
 .mood .qt{color:var(--ai)}
 .scale{display:flex;gap:3px;margin:6px 0 4px}
@@ -116,7 +119,7 @@ pre.out{white-space:pre-wrap;word-break:break-all;background:#fff;border:1px sol
 <body>
 
 <header class="top wrap">
-  <div class="kicker">言語文化　夏目漱石「夢十夜」導入</div>
+  <div class="kicker">言語文化　夏目漱石「夢十夜」導入<span id="courseTag"></span></div>
   <h1>夏目漱石の生涯　視聴ワーク</h1>
   <p class="lead">動画「大人の国語便覧　夏目漱石の生涯」を見ながら取り組みます。最後にまとめをコピーして、ロイロノートで提出します。</p>
   <div class="me">
@@ -205,7 +208,7 @@ const SHIKI = r("正岡子規","まさおかしき"), YONE = r("米山保三郎"
       KYOSHI = r("高浜虚子","たかはまきょし"), KYOKO = r("中根鏡子","なかねきょうこ"),
       YAKUMO = r("小泉八雲","こいずみやくも");
 
-// sec: 動画の開始秒。mood: その章で心の状態を答えるか
+// sec: 動画の開始秒。mood: その章で心の状態を答えるか。x:1 の問題は、基本コースでは「余裕があれば」に回す
 const CHAPTERS = [
   {no:1, title:"イントロダクション", from:"0:00", to:"1:46", sec:0, mood:false, qs:[
     {q:"動画の最初に紹介された三つの作品の組み合わせは？",
@@ -219,19 +222,19 @@ const CHAPTERS = [
     {q:"漱石が生まれたのは何年？",
      c:["1867年（慶応3年）","1868年（明治元年）","1872年（明治5年）","1889年（明治22年）"], a:0,
      n:"大政奉還があった、江戸時代の最後の年です。翌年が明治元年なので、漱石の年齢は「明治何年」の数字とほぼ同じになります。"},
-    {q:"漱石の本名は？",
+    {x:1, q:"漱石の本名は？",
      c:["夏目直克","塩原昌之助",r("正岡常規","まさおかつねのり"),"夏目金之助"], a:3,
      n:"夏目直克は父、塩原昌之助は養父、正岡常規は子規の本名です。「漱石」は、のちに使い始めたペンネームです。"},
     {q:"幼いころの漱石について正しいものは？",
      c:["一人っ子として大切に育てられた","生まれてまもなく、よその家に出された","武士の家の長男として期待された","子どものころから英語を習っていた"], a:1,
      n:`里子や養子に出され、家族の愛情を感じにくい少年時代を過ごしました。心の支えは母・${r("千枝","ちえ")}でした。`},
-    {q:"大学予備門で落第してしまった漱石は、そのあとどうした？",
+    {x:1, q:"大学予備門で落第してしまった漱石は、そのあとどうした？",
      c:["学問をあきらめて家の仕事を継いだ","子規と旅に出て気分を変えた","塾で講師のアルバイトをしながら勉強に励み、卒業まで首席を通した","退学して漢文の塾に戻った"], a:2,
      n:"友人と遊ぶ楽しさを覚えて落第したものの、父に学費の面倒をかけたくないと、人が変わったように勉強しました。"},
     {q:`漱石に文学の道へ進むことを決めさせた、予備門時代の友人は？`,
      c:[YONE, SHIKI, KYOSHI, r("真鍋嘉一郎","まなべかいちろう")], a:0,
      n:"「人の一生は一瞬だが、すぐれた文学作品の命は永遠である」という米山の言葉が、漱石の進路を決めました。"},
-    {q:`漱石と${SHIKI}が親しくなるきっかけになった、共通の趣味は？`,
+    {x:1, q:`漱石と${SHIKI}が親しくなるきっかけになった、共通の趣味は？`,
      c:["落語","野球","囲碁","将棋"], a:0,
      n:"子規は野球好きとしても知られていますが、二人を結びつけたのは落語でした。その後、互いの書いたものを批評し合う仲になります。"},
     {q:"ペンネーム「漱石」を、もともと使っていたのは誰？",
@@ -239,7 +242,7 @@ const CHAPTERS = [
      n:`子規から譲り受けた名前です。中国の故事「${r("漱石枕流","そうせきちんりゅう")}」から取られた名前で、負けおしみが強く頑固なことのたとえです。漱石は、自分の性格にぴったりだと思ったのでしょう。`}
   ]},
   {no:3, title:"松山での漱石", from:"12:26", to:"17:54", sec:746, mood:true, qs:[
-    {q:"松山（愛媛県）で漱石が就いた仕事は？",
+    {x:1, q:"松山（愛媛県）で漱石が就いた仕事は？",
      c:["新聞記者","中学校の英語教師","医者","お寺の僧"], a:1,
      n:"愛媛県尋常中学校（今の高校にあたる）の英語教師として赴任しました。"},
     {q:"松山での教師生活がもとになった作品は？",
@@ -251,10 +254,10 @@ const CHAPTERS = [
     {q:"松山の漱石の下宿に転がりこみ、一緒に暮らしたのは？",
      c:[SHIKI, YONE, KYOKO, YAKUMO], a:0,
      n:`病気の療養中だった子規と暮らし、俳句の会を通じて${KYOSHI}たちとも交流が生まれました。`},
-    {q:"療養を終えた子規が松山を去るとき、漱石に出させたものは？",
+    {x:1, q:"療養を終えた子規が松山を去るとき、漱石に出させたものは？",
      c:["東京までの旅費と、途中の奈良で遊ぶお金","下宿代一年分","新しい着物","俳句の本を出すための費用"], a:0,
      n:"有名な「柿食へば鐘が鳴るなり法隆寺」は、この旅でよまれた句です。漱石の友情へのお礼の気持ちだったのかもしれません。"},
-    {q:"漱石が見合いで結婚した相手は？",
+    {x:1, q:"漱石が見合いで結婚した相手は？",
      c:[r("与謝野晶子","よさのあきこ"), r("樋口一葉","ひぐちいちよう"), KYOKO, r("平塚らいてう","ひらつからいちょう")], a:2,
      n:"見合いのあと、鏡子の印象を聞かれた漱石は「歯並びが悪いのに、それを隠さずに笑うところが気に入った」と答えました。ほかの三人は、同じ時代に活躍した女性の文学者・思想家です。"}
   ]},
@@ -265,12 +268,12 @@ const CHAPTERS = [
     {q:"熊本時代、若くして亡くなったことを知り、漱石が自分の生き方を問い直すきっかけになった友人は？",
      c:[SHIKI, KYOSHI, YONE, YAKUMO], a:2,
      n:"文学の道を勧めてくれた米山は、29歳の若さで、腸チフスで亡くなりました。「米山が期待したような生き方を、自分はできているのか」と漱石は自分に問いかけます。"},
-    {q:"熊本で生まれた長女は「筆子」と名づけられた。この名前にこめられた願いは？",
+    {x:1, q:"熊本で生まれた長女は「筆子」と名づけられた。この名前にこめられた願いは？",
      c:["作家になってほしい","字のきれいな子になってほしい","手紙をたくさん書いてほしい","絵の上手な子になってほしい"], a:1,
      n:"妻の鏡子が字が苦手だったことから、この願いがこめられました。この筆子の日記が、のちにロンドンの漱石をなぐさめることになります。"}
   ]},
   {no:5, title:"ロンドンでの漱石", from:"20:33", to:"26:18", sec:1233, mood:true, qs:[
-    {q:"漱石はどのような立場でイギリスへ渡った？",
+    {x:1, q:"漱石はどのような立場でイギリスへ渡った？",
      c:["朝日新聞の特派員","自分のお金で行く留学生","文部省の留学生","外交官"], a:2,
      n:"国の命令で、英語の研究のために留学しました。"},
     {q:"ロンドンでの漱石の生活として正しいものは？",
@@ -279,21 +282,21 @@ const CHAPTERS = [
     {q:"このころ日本では、漱石についてどんなうわさが流れた？",
      c:["「漱石は発狂した」","「イギリスで大学教授になった」","「イギリス人と結婚した」","「大金持ちになった」"], a:0,
      n:`研究報告がとどこおり、そのようなうわさが流れるほど追いつめられていました。${r("神経衰弱","しんけいすいじゃく")}は帰国後も続きます。`},
-    {q:"ロンドン留学中の1902年に亡くなり、漱石に大きな衝撃を与えた友人は？",
+    {x:1, q:"ロンドン留学中の1902年に亡くなり、漱石に大きな衝撃を与えた友人は？",
      c:[YONE, KYOSHI, r("寺田寅彦","てらだとらひこ"), SHIKI], a:3,
      n:"この知らせもあってか漱石の神経衰弱はますます悪化し、文部省は予定より早く帰国させることを決めました。"},
-    {q:"帰国後、漱石は東京帝国大学で誰の後任として英文学を教えた？",
+    {x:1, q:"帰国後、漱石は東京帝国大学で誰の後任として英文学を教えた？",
      c:[r("森鷗外","もりおうがい"), r("坪内逍遥","つぼうちしょうよう"), r("福沢諭吉","ふくざわゆきち"), YAKUMO], a:3,
      n:"ラフカディオ・ハーン（小泉八雲）は『怪談』の作者です。人気の先生の後任で、漱石は苦労しました。"}
   ]},
   {no:6, title:"文豪の誕生", from:"26:18", to:"33:09", sec:1578, mood:true, qs:[
-    {q:"家に住みついた黒い子猫を、鏡子が飼うことにした理由は？",
+    {x:1, q:"家に住みついた黒い子猫を、鏡子が飼うことにした理由は？",
      c:["漱石がどうしても飼いたいと言ったから","子どもたちが泣いて頼んだから","ねずみをよくとったから","爪の先まで真っ黒な猫は、幸運を呼ぶ「福猫」だと聞いたから"], a:3,
      n:"何度追い払っても戻ってきたこの猫が、『吾輩は猫である』のモデルになりました。"},
     {q:"『吾輩は猫である』を書くよう勧めたのは？",
      c:[SHIKI, KYOSHI, KYOKO, YONE], a:1,
      n:"子規はすでに1902年に亡くなっていました。子規の後を継いで俳句雑誌を出していた虚子が、漱石に執筆を勧めました。"},
-    {q:"訪ねてくる門下生が多くて執筆が進まないため、面会日が決められた。その集まりの名前は？",
+    {x:1, q:"訪ねてくる門下生が多くて執筆が進まないため、面会日が決められた。その集まりの名前は？",
      c:["木曜会","日曜会","ホトトギス会","赤門会"], a:0,
      n:"毎週木曜日の午後3時以降と決められました。気難しい一方で、手紙には必ず返事を書く、面倒見のよい人でもありました。"},
     {q:"『猫』が大ヒットしたあと、漱石が選んだ道は？",
@@ -307,21 +310,21 @@ const CHAPTERS = [
     {q:"1910年（明治43年）、漱石が大量の血をはき、生死の境をさまよった場所は？",
      c:["熊本","ロンドン","松山",`伊豆の${r("修善寺","しゅぜんじ")}`], a:3,
      n:"「修善寺の大患」と呼ばれます。この体験のあと、漱石の作品は人間の内面をより深く見つめるものになっていきます。"},
-    {q:"1911年、文部省から文学博士号を贈られることになった漱石は？",
+    {x:1, q:"1911年、文部省から文学博士号を贈られることになった漱石は？",
      c:["喜んで受け取った","辞退した","大学に戻ることを条件に受け取った","朝日新聞社に判断をまかせた"], a:1,
      n:"「へそ曲がりだ」と非難する声も、「痛快だ」と支持する声もあり、世間の注目を集めました。"},
-    {q:"このころ漱石を襲った家族の悲しみは？",
+    {x:1, q:"このころ漱石を襲った家族の悲しみは？",
      c:[`幼い末娘・${r("雛子","ひなこ")}の死`,"妻との離婚","家の火事","兄の破産"], a:0,
      n:"雛子はまだ2歳でした。漱石はその死を、のちに『彼岸過迄』の中の「雨の降る日」という章に書きとめています。"}
   ]},
   {no:8, title:"漱石の最後", from:"36:21", to:"46:08", sec:2181, mood:true, qs:[
-    {q:"1912年、明治天皇が亡くなった。動画で紹介された『こころ』の「先生」の遺書には、どんな気持ちが書かれていた？",
+    {x:1, q:"1912年、明治天皇が亡くなった。動画で紹介された『こころ』の「先生」の遺書には、どんな気持ちが書かれていた？",
      c:["新しい時代が来ることへの喜び","明治の精神が天皇に始まって天皇に終わったような気がした","早く大正の世を見てみたいという期待","自分には関係のない遠い出来事のように思えた"], a:1,
      n:"明治の前の年に生まれた漱石は、まさに明治とともに生きた人でした。"},
-    {q:"自分の過去や弱さを見つめて書いた、自伝的な作品は？",
+    {x:1, q:"自分の過去や弱さを見つめて書いた、自伝的な作品は？",
      c:["『坊っちゃん』",`『${r("道草","みちくさ")}』`,"『吾輩は猫である』","『三四郎』"], a:1,
      n:"自分の欠点も客観的に描く、新しい書き方に挑みました。"},
-    {q:"『明暗』の連載中、漱石が自宅に泊めて、心から気に入った客は？",
+    {x:1, q:"『明暗』の連載中、漱石が自宅に泊めて、心から気に入った客は？",
      c:["神戸から来た若い二人の修行僧",r("芥川龍之介","あくたがわりゅうのすけ"),"ロンドン時代の先生","文部省の役人"], a:0,
      n:"のちに漱石は二人へ「あなた方は、私のところに集まってくる若い人たちより、よほど尊い人たちです」と書き送りました。"},
     {q:"晩年の漱石がめざした境地を表す四字熟語は？",
@@ -367,11 +370,22 @@ function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} 
 const $ = id => document.getElementById(id);
 const plain = h => h.replace(/<rt>.*?<\/rt>/g,"").replace(/<[^>]+>/g,"");
 const esc = s => s.replace(/[&<>"]/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
-const totalQ = CHAPTERS.reduce((n,c)=>n+c.qs.length,0);
+const KIHON = new URLSearchParams(location.search).get("course") === "kihon";
+const need = q => !KIHON || !q.x;
+const totalQ = CHAPTERS.reduce((n,c)=>n+c.qs.filter(need).length,0);
+const totalX = CHAPTERS.reduce((n,c)=>n+c.qs.filter(q=>!need(q)).length,0);
 
 function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toast.h); toast.h=setTimeout(()=>t.classList.remove("show"),1800); }
 
 /* ---------- ① 見ながら ---------- */
+function qHtml(ch, o, label){
+  return `
+        <div class="q" data-k="${ch.no}-${o.i}">
+          <p class="qt"><b>${label}</b>${o.q.q}</p>
+          <div class="choices">${o.q.c.map((c,j)=>`<button data-j="${j}">${c}</button>`).join("")}</div>
+          <div class="fb"></div>
+        </div>`;
+}
 function buildChapters(){
   const root = $("chapters");
   root.innerHTML = CHAPTERS.map(ch => `
@@ -380,12 +394,9 @@ function buildChapters(){
         <h2><small>第${ch.no}章</small>${ch.title}</h2>
         <span class="time">動画 <a href="${VIDEO}&t=${ch.sec}s" target="_blank" rel="noopener">${ch.from}</a> 〜 ${ch.to}</span>
       </div>
-      ${ch.qs.map((q,i)=>`
-        <div class="q" data-k="${ch.no}-${i}">
-          <p class="qt"><b>問${i+1}</b>${q.q}</p>
-          <div class="choices">${q.c.map((c,j)=>`<button data-j="${j}">${c}</button>`).join("")}</div>
-          <div class="fb"></div>
-        </div>`).join("")}
+      ${ch.qs.map((q,i)=>({q,i})).filter(o=>need(o.q)).map((o,n)=>qHtml(ch,o,"問"+(n+1))).join("")}
+      ${ch.qs.some(q=>!need(q)) ? `<details class="extra"><summary>余裕があれば：もう${ch.qs.filter(q=>!need(q)).length}問</summary>
+        ${ch.qs.map((q,i)=>({q,i})).filter(o=>!need(o.q)).map((o,n)=>qHtml(ch,o,"追加"+(n+1))).join("")}</details>` : ""}
       ${ch.mood ? `
         <div class="mood" data-ch="${ch.no}">
           <p class="qt">この時期の漱石の心の状態は？</p>
@@ -402,6 +413,7 @@ function buildChapters(){
       S.ans[k] = +b.dataset.j; save(); paintQ(el); updateProg();
     }));
     paintQ(el);
+    if (S.ans[k] !== undefined && el.closest("details")) el.closest("details").open = true;
   });
   root.querySelectorAll(".mood").forEach(el => {
     const no = el.dataset.ch;
@@ -513,19 +525,25 @@ function bindText(id){
 }
 
 function score(){
-  let ok=0, done=0;
-  CHAPTERS.forEach(c=>c.qs.forEach((q,i)=>{ const m=S.ans[c.no+"-"+i]; if(m!==undefined){done++; if(m===q.a) ok++;} }));
-  return {ok, done};
+  let ok=0, done=0, xok=0, xdone=0;
+  CHAPTERS.forEach(c=>c.qs.forEach((q,i)=>{
+    const m=S.ans[c.no+"-"+i]; if(m===undefined) return;
+    if (need(q)){ done++; if(m===q.a) ok++; } else { xdone++; if(m===q.a) xok++; }
+  }));
+  return {ok, done, xok, xdone};
 }
 function buildOut(){
   const sc = score(), L = [];
   L.push("【夏目漱石の生涯　視聴ワーク】");
   L.push(`${S.kumi||"　"}組 ${S.ban||"　"}番　${S.name||"（氏名未入力）"}`);
   L.push("");
-  L.push(`■ 聞き取り問題　${sc.ok} / ${totalQ} 問正解（解答 ${sc.done} 問）`);
+  L.push(`■ 聞き取り問題（${KIHON?"基本コース":"全問コース"}）　${sc.ok} / ${totalQ} 問正解（解答 ${sc.done} 問）`);
+  if (sc.xdone) L.push(`　余裕があれば：${sc.xok} / ${sc.xdone} 問正解（${totalX} 問中 ${sc.xdone} 問に挑戦）`);
+  const mark = (c,q,i) => { const m=S.ans[c.no+"-"+i]; return m===undefined?"－":(m===q.a?"○":"×"); };
   CHAPTERS.forEach(c => {
-    const marks = c.qs.map((q,i)=>{ const m=S.ans[c.no+"-"+i]; return m===undefined?"－":(m===q.a?"○":"×"); }).join("");
-    L.push(`　第${c.no}章 ${c.title}：${marks}`);
+    const marks = c.qs.map((q,i)=>need(q)?mark(c,q,i):"").join("");
+    const xs = c.qs.map((q,i)=>!need(q)&&S.ans[c.no+"-"+i]!==undefined?mark(c,q,i):"").join("");
+    L.push(`　第${c.no}章 ${c.title}：${marks}${xs?"（追加 "+xs+"）":""}`);
   });
   L.push("");
   L.push("■ 漱石の人生グラフ（心の状態 −5〜+5）");
@@ -590,7 +608,7 @@ function updateProg(){
   paintChNav();
 }
 function chDone(ch){
-  return ch.qs.every((q,i)=>S.ans[ch.no+"-"+i]!==undefined) && (!ch.mood || S.mood[ch.no]!==undefined);
+  return ch.qs.every((q,i)=>!need(q) || S.ans[ch.no+"-"+i]!==undefined) && (!ch.mood || S.mood[ch.no]!==undefined);
 }
 function paintChNav(){
   document.querySelectorAll(".chNav button").forEach(b => {
@@ -626,6 +644,7 @@ document.querySelectorAll("nav.tabs button").forEach(b=>b.addEventListener("clic
 document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.go)));
 ["kumi","ban","name"].forEach(id => { const el=$(id); el.value=S[id]||""; el.addEventListener("input",()=>{S[id]=el.value; save();}); });
 
+$("courseTag").textContent = KIHON ? "　｜　基本コース" : "　｜　全問コース";
 buildChapters(); buildAfter(); buildSubmit(); showCh(S.ch || 1, false); updateProg();
 showTab(S.tab || "watch");
 </script>
