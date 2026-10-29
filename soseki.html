@@ -137,7 +137,7 @@ pre.out{white-space:pre-wrap;word-break:break-all;background:#fff;border:1px sol
 
 <main class="wrap">
   <section class="pane on" id="pane-watch">
-    <p class="note">一章ずつ、聞き取り問題に答えます。<b>答えは一回だけ。動画で聞いてから押そう。</b>上の番号で、どの章にも移れます。2章からは、その時期の漱石の<b>心の状態</b>を −5〜+5 で選び、理由を一言書きます（正解はありません）。</p>
+    <p class="note">一章ずつ、聞き取り問題に答えます。<b>まちがえたら、あと1回だけ答え直せます</b>（正解は2回目のあとに出ます）。上の番号で、どの章にも移れます。2章からは、その時期の漱石の<b>心の状態</b>を −5〜+5 で選び、理由を一言書きます（正解はありません）。</p>
     <div class="chNav" id="chNav"></div>
     <div id="chapters"></div>
     <div class="pager next"><button class="big sub" id="prevCh">← 前の章</button><button class="big" id="nextCh">次の章 →</button></div>
@@ -360,8 +360,9 @@ const EPISODES = [
 ];
 
 const KEY = "soseki_work_v2";
-let S = {kumi:"",ban:"",name:"",ans:{},mood:{},why:{},yume:null,yumeChips:[],yumeGuess:"",ep:null,epOther:"",epWhy:"",moreA:"",moreB:"",tab:"watch",ch:1};
+let S = {kumi:"",ban:"",name:"",ans:{},ans2:{},mood:{},why:{},yume:null,yumeChips:[],yumeGuess:"",ep:null,epOther:"",epWhy:"",moreA:"",moreB:"",tab:"watch",ch:1};
 try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s) S = Object.assign(S, s); }catch(e){}
+S.ans2 = S.ans2 || {};
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
 
 const $ = id => document.getElementById(id);
@@ -398,8 +399,11 @@ function buildChapters(){
   root.querySelectorAll(".q").forEach(el => {
     const k = el.dataset.k;
     el.querySelectorAll(".choices button").forEach(b => b.addEventListener("click", () => {
-      if (S.ans[k] !== undefined) return;
-      S.ans[k] = +b.dataset.j; save(); paintQ(el); updateProg();
+      const j = +b.dataset.j;
+      if (S.ans[k] === undefined) S.ans[k] = j;
+      else if (stateOf(k) === "retry" && j !== S.ans[k]) S.ans2[k] = j;
+      else return;
+      save(); paintQ(el); updateProg();
     }));
     paintQ(el);
   });
@@ -415,17 +419,38 @@ function buildChapters(){
   });
 }
 function qOf(k){ const [c,i]=k.split("-").map(Number); return CHAPTERS.find(x=>x.no===c).qs[i]; }
+// 1回目で正解 o／2回目で正解 t／2回とも不正解 x／1回まちがえて答え直し待ち retry／未回答 none
+function stateOf(k){
+  const q = qOf(k), a1 = S.ans[k], a2 = S.ans2[k];
+  if (a1 === undefined) return "none";
+  if (a1 === q.a) return "o";
+  if (a2 === undefined) return "retry";
+  return a2 === q.a ? "t" : "x";
+}
 function paintQ(el){
-  const k = el.dataset.k, q = qOf(k), my = S.ans[k];
-  if (my === undefined) return;
+  const k = el.dataset.k, q = qOf(k), st = stateOf(k), a1 = S.ans[k], a2 = S.ans2[k];
+  if (st === "none") return;
+  const fb = el.querySelector(".fb");
+  if (st === "retry"){
+    el.querySelectorAll(".choices button").forEach(b => {
+      const j = +b.dataset.j;
+      b.disabled = j===a1;
+      b.classList.toggle("wrong", j===a1);
+    });
+    fb.innerHTML = `<span class="mark x">ちがいます</span>あと1回だけ答えられます。動画をよく聞いてから選ぼう。`;
+    fb.classList.add("show");
+    return;
+  }
   el.querySelectorAll(".choices button").forEach(b => {
     const j = +b.dataset.j; b.disabled = true;
     b.classList.toggle("right", j===q.a);
-    b.classList.toggle("wrong", j===my && j!==q.a);
-    b.classList.toggle("dim", j!==q.a && j!==my);
+    b.classList.toggle("wrong", (j===a1 || j===a2) && j!==q.a);
+    b.classList.toggle("dim", j!==q.a && j!==a1 && j!==a2);
   });
-  const fb = el.querySelector(".fb");
-  fb.innerHTML = (my===q.a ? `<span class="mark o">正解</span>` : `<span class="mark x">正解は${/^『/.test(q.c[q.a]) ? q.c[q.a] : "「"+q.c[q.a]+"」"}</span>`) + q.n;
+  const head = st==="o" ? `<span class="mark o">正解</span>`
+             : st==="t" ? `<span class="mark o">2回目で正解</span>`
+             : `<span class="mark x">正解は${/^『/.test(q.c[q.a]) ? q.c[q.a] : "「"+q.c[q.a]+"」"}</span>`;
+  fb.innerHTML = head + q.n;
   fb.classList.add("show");
 }
 function paintMood(el){
@@ -513,18 +538,21 @@ function bindText(id){
 }
 
 function score(){
-  let ok=0, done=0;
-  CHAPTERS.forEach(c=>c.qs.forEach((q,i)=>{ const m=S.ans[c.no+"-"+i]; if(m!==undefined){done++; if(m===q.a) ok++;} }));
-  return {ok, done};
+  const n = {o:0, t:0, x:0, retry:0, none:0};
+  CHAPTERS.forEach(c=>c.qs.forEach((q,i)=>n[stateOf(c.no+"-"+i)]++));
+  n.done = n.o + n.t + n.x;
+  return n;
 }
 function buildOut(){
   const sc = score(), L = [];
   L.push("【夏目漱石の生涯　視聴ワーク】");
   L.push(`${S.kumi||"　"}組 ${S.ban||"　"}番　${S.name||"（氏名未入力）"}`);
   L.push("");
-  L.push(`■ 聞き取り問題　${sc.ok} / ${totalQ} 問正解（解答 ${sc.done} 問）`);
+  L.push(`■ 聞き取り問題（全${totalQ}問）　○ ${sc.o}問　△ ${sc.t}問　× ${sc.x + sc.retry}問　未回答 ${sc.none}問`);
+  L.push("　（○…1回目で正解　△…2回目で正解　×…不正解　－…未回答）");
+  const MARK = {o:"○", t:"△", x:"×", retry:"×", none:"－"};
   CHAPTERS.forEach(c => {
-    const marks = c.qs.map((q,i)=>{ const m=S.ans[c.no+"-"+i]; return m===undefined?"－":(m===q.a?"○":"×"); }).join("");
+    const marks = c.qs.map((q,i)=>MARK[stateOf(c.no+"-"+i)]).join("");
     L.push(`　第${c.no}章 ${c.title}：${marks}`);
   });
   L.push("");
@@ -590,7 +618,7 @@ function updateProg(){
   paintChNav();
 }
 function chDone(ch){
-  return ch.qs.every((q,i)=>S.ans[ch.no+"-"+i]!==undefined) && (!ch.mood || S.mood[ch.no]!==undefined);
+  return ch.qs.every((q,i)=>["o","t","x"].includes(stateOf(ch.no+"-"+i))) && (!ch.mood || S.mood[ch.no]!==undefined);
 }
 function paintChNav(){
   document.querySelectorAll(".chNav button").forEach(b => {
