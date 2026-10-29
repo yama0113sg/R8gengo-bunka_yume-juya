@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>第一夜　百年、待ってみる</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#0e1226; --ink:#eef0f7; --sub:#a9aec4; --line:rgba(255,255,255,.14);
+  --red:#d2392a; --gold:#e3c27a; --card:#171c34;
+  --mincho:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --gothic:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--night);color:var(--ink);font-family:var(--gothic);-webkit-text-size-adjust:100%;overflow-x:hidden}
+body{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
+rt{font-size:.5em;color:var(--sub)}
+
+.stage{position:relative;flex:1 1 auto;min-height:46vh;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+svg#scene{width:100%;height:100%;max-height:66vh;display:block;overflow:visible}
+.counter{position:absolute;top:14px;left:0;right:0;text-align:center;font-family:var(--mincho);font-size:44px;font-weight:800;letter-spacing:.1em;color:var(--ink);text-shadow:0 2px 12px rgba(0,0,0,.6);transition:filter .6s,opacity .6s;pointer-events:none}
+.counter small{display:block;font-size:13px;font-weight:500;letter-spacing:.2em;color:var(--sub);font-family:var(--gothic)}
+
+.panel{flex:0 0 auto;background:#161613;position:relative;z-index:1;padding:14px 16px calc(18px + env(safe-area-inset-bottom))}
+.panel .in{max-width:760px;margin:0 auto}
+.text{font-family:var(--mincho);font-size:21px;line-height:1.9;min-height:4.2em;letter-spacing:.03em;opacity:0;transform:translateY(6px);transition:opacity .5s,transform .5s}
+.text.show{opacity:1;transform:none}
+.text .q{color:#fff}
+.text .nar{color:var(--sub);font-family:var(--gothic);font-size:17px}
+.btns{display:flex;gap:10px;margin-top:12px}
+.btns button{flex:1;font:inherit;font-size:17px;font-weight:700;padding:15px 10px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.08);color:var(--ink);cursor:pointer}
+.btns button.main{background:var(--red);border-color:var(--red);color:#fff}
+.btns button:disabled{opacity:.35;cursor:default}
+.hidden{display:none!important}
+
+.title{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:radial-gradient(70% 60% at 50% 40%,#1b2142,var(--night));padding:24px 16px;text-align:center}
+.title h1{font-family:var(--mincho);font-size:46px;margin:0;letter-spacing:.2em}
+.title p{margin:0;color:var(--sub);font-size:16px;line-height:1.8}
+.title button{font:inherit;font-size:18px;font-weight:700;padding:14px 40px;border-radius:999px;border:0;background:var(--red);color:#fff;cursor:pointer}
+
+.end{position:fixed;inset:0;z-index:30;overflow:auto;background:rgba(10,13,28,.94);padding:28px 16px 40px}
+.end .in{max-width:680px;margin:0 auto}
+.end h2{font-family:var(--mincho);font-size:24px;margin:0 0 6px}
+.end .log{color:var(--sub);font-size:15px;margin:0 0 18px;line-height:1.8}
+.end .qbox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:0 0 14px}
+.end .qbox p{margin:0 0 8px;font-weight:700;line-height:1.7}
+.end textarea{width:100%;font:inherit;font-size:16px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#0f1329;color:var(--ink);resize:vertical}
+.end .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.end .row button{flex:1;min-width:180px;font:inherit;font-size:16px;font-weight:700;padding:13px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.08);color:var(--ink);cursor:pointer}
+.end .row button.main{background:var(--red);border-color:var(--red);color:#fff}
+.end .note{font-size:14px;color:var(--sub);line-height:1.7}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#fff;color:#111;padding:10px 18px;border-radius:999px;font-size:15px;opacity:0;transition:.3s;pointer-events:none;z-index:50}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@keyframes twinkle{0%,100%{opacity:.35}50%{opacity:1}}
+#star.on{animation:twinkle 1.6s ease-in-out infinite}
+</style>
+</head>
+<body>
+
+<div class="title" id="title">
+  <h1>第一夜</h1>
+  <p>これは、ある男が見た夢の話です。<br>男といっしょに、待ってみてください。</p>
+  <button id="startBtn">はじめる</button>
+</div>
+
+<div class="stage">
+  <svg id="scene" viewBox="0 0 400 420" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+    <defs>
+      <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2a26"/><stop offset="1" stop-color="#151512"/></linearGradient>
+      <radialGradient id="stoneG" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#a7abb2"/><stop offset="1" stop-color="#5d626b"/></radialGradient>
+      <radialGradient id="sunG" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff5a3c"/><stop offset=".7" stop-color="#d2392a"/><stop offset="1" stop-color="#d2392a" stop-opacity="0"/></radialGradient>
+      <radialGradient id="petal" cx=".5" cy=".2" r=".9"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e6ece6"/></radialGradient>
+    </defs>
+    <rect id="sky" x="-2000" y="-2000" width="4400" height="2340" fill="#0e1226"/>
+    <circle id="star" cx="300" cy="70" r="3.2" fill="#fff" opacity="0"/>
+    <circle id="sun" cx="-60" cy="330" r="30" fill="url(#sunG)"/>
+    <rect x="-2000" y="330" width="4400" height="2000" fill="#1d1d1a"/>
+    <rect x="-2000" y="330" width="4400" height="90" fill="url(#ground)"/>
+    <g id="lily" opacity="0">
+      <path id="stem" d="M226 362 C 250 330, 238 280, 214 240 C 200 214, 196 196, 200 176" fill="none" stroke="#4d8f52" stroke-width="4" stroke-linecap="round"/>
+      <g id="flower" transform="translate(200 176) scale(0)">
+        <path d="M0 0 C -18 -10, -30 -38, -10 -62 C -4 -40, 2 -24, 0 0Z" fill="url(#petal)"/>
+        <path d="M0 0 C 18 -10, 30 -38, 10 -62 C 4 -40, -2 -24, 0 0Z" fill="url(#petal)"/>
+        <path d="M0 0 C -30 -4, -52 -22, -50 -46 C -32 -30, -14 -16, 0 0Z" fill="url(#petal)"/>
+        <path d="M0 0 C 30 -4, 52 -22, 50 -46 C 32 -30, 14 -16, 0 0Z" fill="url(#petal)"/>
+        <path d="M0 0 C -6 -20, 0 -48, 0 -70 C 2 -48, 6 -20, 0 0Z" fill="#fff"/>
+        <line x1="0" y1="-4" x2="-8" y2="-40" stroke="#c9a54a" stroke-width="1.2"/>
+        <line x1="0" y1="-4" x2="8" y2="-40" stroke="#c9a54a" stroke-width="1.2"/>
+      </g>
+      <ellipse id="bud" cx="200" cy="160" rx="7" ry="18" fill="#dfe8d8" opacity="0"/>
+    </g>
+    <ellipse cx="200" cy="364" rx="70" ry="10" fill="#0b0b09" opacity=".5"/>
+    <path d="M140 364 C 140 300, 260 300, 260 364 Z" fill="url(#stoneG)"/>
+    <g id="moss"></g>
+  </svg>
+  <div class="counter hidden" id="counter"></div>
+</div>
+
+<div class="panel">
+  <div class="in">
+    <div class="text" id="text"></div>
+    <div class="btns" id="btns"></div>
+  </div>
+</div>
+
+<div class="end hidden" id="end">
+  <div class="in">
+    <h2>「百年はもう来ていたんだな。」</h2>
+    <p class="log" id="log"></p>
+    <div class="qbox">
+      <p>Q1．数えきれなくなっていたのに、なぜ男は「百年はもう来ていた」と気がついたのだろう。</p>
+      <textarea id="a1" rows="3" placeholder="今の予想でかまいません"></textarea>
+    </div>
+    <div class="qbox">
+      <p>Q2．石の下から咲いた白い百合は、何だと思う？</p>
+      <textarea id="a2" rows="2" placeholder="今の予想でかまいません"></textarea>
+    </div>
+    <p class="note">このあと本文を読みます。ゲームに出てこなかった場面や言葉に、予想の答えのヒントがかくれています。</p>
+    <div class="row">
+      <button class="main" id="copyBtn">予想をコピーする（ロイロ用）</button>
+      <button id="againBtn">もう一度はじめから</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const KEY = "yume_daiichiya_v1";
+let S = {a1:"", a2:"", count:0, choice:""};
+try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s) S = Object.assign(S, s); }catch(e){}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const KAN = ["","一","二","三","四","五","六","七","八","九","十"];
+const kan = n => n<=10 ? KAN[n] : n<20 ? "十"+KAN[n-10] : KAN[Math.floor(n/10)]+"十"+KAN[n%10];
+// 「」は教科書本文の引用、nar はゲームの語り
+const Q = s => `<span class="q">${s}</span>`, N = s => `<span class="nar">${s}</span>`;
+const KANJO = `<ruby>勘定<rt>かんじょう</rt></ruby>`;
+
+/* ---------- 文字と操作 ---------- */
+async function say(html){
+  const t = $("text"); t.classList.remove("show"); await sleep(250);
+  t.innerHTML = html; t.classList.add("show");
+}
+function buttons(list){
+  return new Promise(res => {
+    const b = $("btns"); b.innerHTML = "";
+    list.forEach(([label, val, main]) => {
+      const el = document.createElement("button"); el.textContent = label; if (main) el.className = "main";
+      el.addEventListener("click", () => { b.innerHTML = ""; res(val); }, {once:true});
+      b.appendChild(el);
+    });
+  });
+}
+const next = (label="次へ") => buttons([[label, true, true]]);
+function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(toast.h); toast.h=setTimeout(()=>t.classList.remove("show"),1800); }
+
+/* ---------- 空・日・苔 ---------- */
+const mix = (a,b,t) => "#" + [0,2,4].map(i => Math.round(parseInt(a.substr(i+1,2),16)*(1-t) + parseInt(b.substr(i+1,2),16)*t).toString(16).padStart(2,"0")).join("");
+function setSky(t){ paintSky(mix("#0e1226", "#6a3437", t)); }
+function paintSky(c){ $("sky").setAttribute("fill", c); document.body.style.background = c; }
+function sunAt(p){
+  const x = -40 + 480*p, y = 372 - Math.sin(Math.PI*p)*272;
+  $("sun").setAttribute("cx", x); $("sun").setAttribute("cy", y);
+  setSky(Math.sin(Math.PI*p) * .9);
+}
+function sunPass(ms){
+  return new Promise(res => {
+    const t0 = performance.now();
+    (function f(now){
+      const p = Math.min(1, (now - t0) / ms);
+      sunAt(p);
+      p < 1 ? requestAnimationFrame(f) : res();
+    })(t0);
+  });
+}
+const MOSS = [];
+(function buildMoss(){
+  let seed = 7; const rnd = () => (seed = (seed*9301+49297) % 233280) / 233280;
+  const g = $("moss");
+  for (let i=0; i<46; i++){
+    const a = Math.PI * (0.05 + rnd()*0.9), r = 52 + rnd()*10;
+    const x = 200 - Math.cos(a)*r*1.12, y = 364 - Math.sin(a)*r*0.95 + rnd()*14;
+    const e = document.createElementNS("http://www.w3.org/2000/svg","ellipse");
+    e.setAttribute("cx", x); e.setAttribute("cy", Math.min(y, 360)); e.setAttribute("rx", 4+rnd()*7); e.setAttribute("ry", 2.5+rnd()*4);
+    e.setAttribute("fill", ["#3f6b3a","#4f7d43","#5c8a4c","#36592f"][i%4]); e.setAttribute("opacity", 0);
+    e.style.transition = "opacity 1.2s";
+    g.appendChild(e); MOSS.push({e, at: rnd()});
+  }
+})();
+function setMoss(level){ MOSS.forEach(m => m.e.setAttribute("opacity", m.at < level ? .9 : 0)); }
+
+function showCounter(n, blur){
+  const c = $("counter"); c.classList.remove("hidden");
+  c.innerHTML = (n===null ? "……" : kan(n)+"つ") + "<small>赤い日を数えた数</small>";
+  c.style.filter = blur ? `blur(${blur}px)` : "none";
+}
+
+/* ---------- 百合 ---------- */
+function animate(ms, fn){
+  return new Promise(res => {
+    const t0 = performance.now();
+    (function f(now){ const p = Math.min(1,(now-t0)/ms); fn(p); p<1 ? requestAnimationFrame(f) : res(); })(t0);
+  });
+}
+const ease = p => 1 - Math.pow(1-p, 3);
+
+/* ---------- 物語 ---------- */
+async function play(){
+  S.count = 0; S.choice = ""; save();
+  $("end").classList.add("hidden"); $("counter").classList.add("hidden");
+  $("lily").setAttribute("opacity", 0); $("star").setAttribute("opacity", 0); $("star").classList.remove("on");
+  $("flower").setAttribute("transform","translate(200 176) scale(0)"); $("bud").setAttribute("opacity",0);
+  setMoss(0); sunAt(0);
+
+  await say(Q("こんな夢を見た。")); await next();
+  await say(N("枕元に座っていると、あおむきに寝た女が、静かな声で言う。") + "<br>" + Q("「もう死にます。」")); await next();
+  await say(N("女は、こう頼んだ。") + "<br>" + Q("「百年待っていてください。」")); await next();
+  await say(Q("「百年、私の墓のそばに座って待っていてください。きっと会いに来ますから。」")); await next();
+  await say(Q("自分は、ただ待っていると答えた。")); await next();
+  await say(N("女は死んだ。男は女を埋め、丸い石を墓にして、そのそばに座った。")); await next();
+  await say(N("日が昇って、沈んだら、一つ。<br>男のかわりに、数えてみましょう。")); await next("待ちはじめる");
+
+  // 自分で数える
+  for (let n=1; n<=14; n++){
+    const go = buttons([["日が昇り、沈む", true, true]]);
+    if (n===1) await say(N("ボタンを押すと、日が昇って沈みます。"));
+    await go;
+    await sunPass(n < 4 ? 1500 : 1100);
+    S.count = n; save();
+    setMoss(n * 0.012);
+    showCounter(n, n>=9 ? (n-8)*0.9 : 0);
+    if (n===1) await say(Q(`大きな赤い日であった。……一つと自分は${KANJO}した。`));
+    else if (n===2) await say(Q(`二つとまた${KANJO}をした。`));
+    else if (n===6) await say(N("まだ、百には遠い。"));
+    else if (n===10) await say(N("……いくつまで数えたのだったか。"));
+  }
+  // 数えきれなくなる
+  await say(Q(`${KANJO}しても、${KANJO}しても、しつくせないほど赤い日が頭の上を通り越していった。`));
+  showCounter(null, 3);
+  for (let i=0; i<46; i++){
+    await sunPass(Math.max(130, 700 - i*24));
+    setMoss(0.17 + i * 0.018);
+  }
+  setSky(0);
+  await say(Q("それでも百年がまだ来ない。")); await next();
+  await say(Q("自分は女にだまされたのではなかろうかと思いだした。")); await next();
+
+  // 問いかけ
+  await say(N("あなたなら、まだ待ちますか。"));
+  S.choice = await buttons([["まだ待つ","wait",true],["もう待たない","quit",false]]); save();
+  await say(N(S.choice==="wait" ? "男も、待ち続けた。" : "……けれど、男はそこを動かなかった。")); await sleep(1800);
+
+  // 百合
+  const stem = $("stem"), len = stem.getTotalLength();
+  stem.style.strokeDasharray = len; stem.style.strokeDashoffset = len;
+  $("lily").setAttribute("opacity", 1);
+  await say(N("すると、石の下から青い茎が伸びてきた。"));
+  await animate(3200, p => stem.style.strokeDashoffset = len*(1-ease(p)));
+  $("bud").setAttribute("opacity", 1);
+  await sleep(900);
+  await say(N("そして、真っ白な百合が花びらを開いた。"));
+  $("bud").setAttribute("opacity", 0);
+  await animate(2200, p => $("flower").setAttribute("transform", `translate(200 176) scale(${ease(p)*1.15})`));
+  await next();
+  // 夜明けと星
+  await animate(2500, p => { paintSky(mix("#0e1226","#3d4f7a",p)); $("star").setAttribute("opacity", p); });
+  $("star").classList.add("on");
+  await sleep(600);
+  await say(Q("「百年はもう来ていたんだな。」とこのとき初めて気がついた。")); await next("おわり");
+  showEnd();
+}
+
+function showEnd(){
+  $("log").innerHTML = `あなたが数えられた赤い日は <b>${kan(Math.max(S.count,1))}つ</b>。そのあとは、数えきれなくなりました。<br>`
+    + (S.choice==="quit" ? "あなたは「もう待たない」を選びました。それでも男は待ち続けました。" : "あなたは「まだ待つ」を選びました。");
+  $("a1").value = S.a1; $("a2").value = S.a2;
+  $("end").classList.remove("hidden");
+}
+["a1","a2"].forEach(id => $(id).addEventListener("input", e => { S[id] = e.target.value; save(); }));
+function outText(){
+  return ["【夢十夜「第一夜」　読む前の予想】",
+    `Q1 なぜ男は「百年はもう来ていた」と気がついたのか：${S.a1.trim() || "（未記入）"}`,
+    `Q2 白い百合は何か：${S.a2.trim() || "（未記入）"}`].join("\n");
+}
+$("copyBtn").addEventListener("click", () => {
+  const text = outText();
+  const fallback = () => {
+    const ta = document.createElement("textarea"); ta.value = text; ta.setAttribute("readonly",""); ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, text.length);
+    let ok=false; try{ ok=document.execCommand("copy"); }catch(e){}
+    document.body.removeChild(ta); toast(ok ? "コピーしました" : "コピーできませんでした");
+  };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(()=>toast("コピーしました"), fallback);
+  else fallback();
+});
+$("againBtn").addEventListener("click", play);
+$("startBtn").addEventListener("click", () => { $("title").classList.add("hidden"); play(); });
+sunAt(0);
+</script>
+</body>
+</html>
