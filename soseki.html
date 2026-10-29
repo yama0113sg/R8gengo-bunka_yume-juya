@@ -42,7 +42,16 @@ section.pane{display:none;padding-top:18px}
 section.pane.on{display:block}
 .note{background:var(--aiSoft);border-radius:12px;padding:12px 16px;font-size:15px;color:var(--ai);margin:0 0 18px}
 
-.ch{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 18px 8px;margin:0 0 18px}
+.ch{display:none;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 18px 8px;margin:0 0 18px}
+.ch.on{display:block}
+.chNav{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin:0 0 14px}
+.chNav button{font:inherit;font-size:15px;font-weight:700;padding:8px 0;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--sub);cursor:pointer;position:relative}
+.chNav button.done{background:var(--okSoft);border-color:var(--ok);color:var(--ok)}
+.chNav button.done::after{content:"✓";font-size:11px;position:absolute;top:1px;right:5px}
+.chNav button.on{background:var(--ai);border-color:var(--ai);color:#fff}
+.pager{display:flex;gap:10px}
+.pager button{flex:1}
+.pager button:disabled{visibility:hidden}
 .chHead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:12px}
 .chHead h2{font-family:var(--mincho);font-size:22px;margin:0}
 .chHead h2 small{font-size:14px;color:var(--sub);margin-right:8px;font-family:var(--gothic)}
@@ -128,9 +137,10 @@ pre.out{white-space:pre-wrap;word-break:break-all;background:#fff;border:1px sol
 
 <main class="wrap">
   <section class="pane on" id="pane-watch">
-    <p class="note">章ごとに、聞き取り問題に答えます。2章からは、その時期の漱石の<b>心の状態</b>を −5〜+5 で選び、理由を一言書きます（正解はありません）。</p>
+    <p class="note">一章ずつ、聞き取り問題に答えます。上の番号で、どの章にも移れます。2章からは、その時期の漱石の<b>心の状態</b>を −5〜+5 で選び、理由を一言書きます（正解はありません）。</p>
+    <div class="chNav" id="chNav"></div>
     <div id="chapters"></div>
-    <div class="next"><button class="big" data-go="after">② 見た後に へ進む</button></div>
+    <div class="pager next"><button class="big sub" id="prevCh">← 前の章</button><button class="big" id="nextCh">次の章 →</button></div>
   </section>
 
   <section class="pane" id="pane-after">
@@ -311,7 +321,7 @@ const EPISODES = [
 ];
 
 const KEY = "soseki_work_v1";
-let S = {kumi:"",ban:"",name:"",ans:{},mood:{},why:{},yume:null,yumeChips:[],yumeGuess:"",ep:null,epOther:"",epWhy:"",moreA:"",moreB:"",tab:"watch"};
+let S = {kumi:"",ban:"",name:"",ans:{},mood:{},why:{},yume:null,yumeChips:[],yumeGuess:"",ep:null,epOther:"",epWhy:"",moreA:"",moreB:"",tab:"watch",ch:1};
 try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s) S = Object.assign(S, s); }catch(e){}
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
 
@@ -376,7 +386,7 @@ function paintQ(el){
     b.classList.toggle("dim", j!==q.a && j!==my);
   });
   const fb = el.querySelector(".fb");
-  fb.innerHTML = (my===q.a ? `<span class="mark o">正解</span>` : `<span class="mark x">正解は「${q.c[q.a]}」</span>`) + q.n;
+  fb.innerHTML = (my===q.a ? `<span class="mark o">正解</span>` : `<span class="mark x">正解は${/^『/.test(q.c[q.a]) ? q.c[q.a] : "「"+q.c[q.a]+"」"}</span>`) + q.n;
   fb.classList.add("show");
 }
 function paintMood(el){
@@ -538,7 +548,33 @@ function updateProg(){
   const all = totalQ + MOOD_CH.length + 3;
   const got = sc.done + moodDone + (S.yume!==null?1:0) + ((S.yumeGuess||"").trim()?1:0) + (S.ep!==null && (S.epWhy||"").trim()?1:0);
   $("progBar").style.width = (got/all*100) + "%";
+  paintChNav();
 }
+function chDone(ch){
+  return ch.qs.every((q,i)=>S.ans[ch.no+"-"+i]!==undefined) && (!ch.mood || S.mood[ch.no]!==undefined);
+}
+function paintChNav(){
+  document.querySelectorAll(".chNav button").forEach(b => {
+    const no = +b.dataset.no;
+    b.classList.toggle("on", no===S.ch);
+    b.classList.toggle("done", no!==S.ch && chDone(CHAPTERS[no-1]));
+  });
+}
+function showCh(no, scroll){
+  S.ch = no; save();
+  document.querySelectorAll(".ch").forEach(a => a.classList.toggle("on", a.id==="ch"+no));
+  $("prevCh").disabled = no===1;
+  $("nextCh").textContent = no===CHAPTERS.length ? "② 見た後に へ →" : "次の章 →";
+  paintChNav();
+  if (scroll){
+    const navH = document.querySelector("nav.tabs").offsetHeight;
+    window.scrollTo({top: $("chNav").getBoundingClientRect().top + window.scrollY - navH - 10});
+  }
+}
+$("chNav").innerHTML = CHAPTERS.map(c=>`<button data-no="${c.no}" aria-label="第${c.no}章 ${c.title}">${c.no}</button>`).join("");
+$("chNav").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>showCh(+b.dataset.no, true)));
+$("prevCh").addEventListener("click",()=>showCh(S.ch-1, true));
+$("nextCh").addEventListener("click",()=>{ S.ch===CHAPTERS.length ? showTab("after") : showCh(S.ch+1, true); });
 function showTab(t){
   S.tab = t; save();
   document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.toggle("on", b.dataset.tab===t));
@@ -551,7 +587,7 @@ document.querySelectorAll("nav.tabs button").forEach(b=>b.addEventListener("clic
 document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.go)));
 ["kumi","ban","name"].forEach(id => { const el=$(id); el.value=S[id]||""; el.addEventListener("input",()=>{S[id]=el.value; save();}); });
 
-buildChapters(); buildAfter(); buildSubmit(); updateProg();
+buildChapters(); buildAfter(); buildSubmit(); showCh(S.ch || 1, false); updateProg();
 showTab(S.tab || "watch");
 </script>
 </body>
