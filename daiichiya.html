@@ -303,6 +303,20 @@ function growLeaves(p){
 }
 setFlower(0, 0); growLeaves(0);
 
+// 数えている間の語り。百回押せば終わると思わせておき、21回目でひっくり返す
+const COUNT_LINES = {
+  4: "日が昇って、沈んで、また昇る。",
+  6: "まだ、百には遠い。",
+  9: "石は、何も言わない。",
+  12: "女は、まだ来ない。",
+  15: "あと何回、押せばいいのだろう。",
+  18: "百まで数えれば、会えるのだろうか。",
+  21: "百年は、およそ三万六千五百日。まだまだ遠い。",
+  23: "三万六千五百回……。",
+  25: "一秒に一回押し続けても、十時間かかる。",
+  27: "……いくつまで数えたのだったか。"
+};
+
 /* ---------- 物語 ---------- */
 async function play(){
   S.count = 0; S.choice1 = ""; S.choice = ""; S.why = ""; save();
@@ -325,18 +339,17 @@ async function play(){
   await say(N("日が昇って、沈んだら、一つ。<br>男のかわりに、数えてみましょう。")); await next("待ちはじめる");
 
   // 自分で数える
-  for (let n=1; n<=20; n++){
+  for (let n=1; n<=30; n++){
     const go = buttons([["日が昇り、沈む", true, true]]);
     if (n===1) await say(N("ボタンを押すと、日が昇って沈みます。"));
     await go;
-    await sunPass(n < 4 ? 1500 : n < 10 ? 1000 : 750);
+    await sunPass(n < 4 ? 1500 : n < 10 ? 1000 : n < 20 ? 750 : 600);
     S.count = n; save();
-    setMoss(n * 0.008);
-    showCounter(n, n>=13 ? (n-12)*0.7 : 0);
+    setMoss(n * 0.0055);
+    showCounter(n, n>=24 ? (n-23)*0.7 : 0);
     if (n===1) await say(Q(`大きな赤い日であった。……一つと自分は${KANJO}した。`));
     else if (n===2) await say(Q(`二つとまた${KANJO}をした。`));
-    else if (n===6) await say(N("百年は、およそ三万六千五百日。まだまだ遠い。"));
-    else if (n===15) await say(N("……いくつまで数えたのだったか。"));
+    else if (COUNT_LINES[n]) await say(N(COUNT_LINES[n]));
   }
   // 数えきれなくなる
   await say(Q(`${KANJO}しても、${KANJO}しても、しつくせないほど赤い日が頭の上を通り越していった。`));
