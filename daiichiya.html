@@ -37,6 +37,7 @@ svg#scene{width:100%;height:100%;max-height:66vh;display:block;overflow:visible}
 .btns button{flex:1;font:inherit;font-size:17px;font-weight:700;padding:15px 10px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.08);color:var(--ink);cursor:pointer}
 .btns button.main{background:var(--red);border-color:var(--red);color:#fff}
 .btns button:disabled{opacity:.35;cursor:default}
+.btns input{flex:2;min-width:0;font:inherit;font-size:17px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:#0f1329;color:var(--ink)}
 .hidden{display:none!important}
 
 .title{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:radial-gradient(70% 60% at 50% 40%,#1b2142,var(--night));padding:24px 16px;text-align:center}
@@ -135,7 +136,7 @@ svg#scene{width:100%;height:100%;max-height:66vh;display:block;overflow:visible}
 <script>
 const $ = id => document.getElementById(id);
 const KEY = "yume_daiichiya_v1";
-let S = {a1:"", a2:"", count:0, choice:""};
+let S = {a1:"", a2:"", count:0, choice1:"", choice:"", why:""};
 try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s) S = Object.assign(S, s); }catch(e){}
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -161,6 +162,21 @@ function buttons(list){
   });
 }
 const next = (label="次へ") => buttons([[label, true, true]]);
+// 二択を選んだあと、理由を一言書かないと先へ進めない
+async function choose(opts){
+  const val = await buttons(opts);
+  const label = opts.find(o => o[1]===val)[0];
+  const why = await new Promise(res => {
+    const b = $("btns"); b.innerHTML = "";
+    const inp = document.createElement("input");
+    inp.placeholder = `「${label}」を選んだ理由を一言`;
+    const ok = document.createElement("button"); ok.textContent = "決定"; ok.className = "main"; ok.disabled = true;
+    inp.addEventListener("input", () => ok.disabled = !inp.value.trim());
+    ok.addEventListener("click", () => { b.innerHTML = ""; res(inp.value.trim()); });
+    b.appendChild(inp); b.appendChild(ok); inp.focus();
+  });
+  return {val, why};
+}
 function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(toast.h); toast.h=setTimeout(()=>t.classList.remove("show"),1800); }
 
 /* ---------- 空・日・苔 ---------- */
@@ -287,7 +303,7 @@ setFlower(0, 0); growLeaves(0);
 
 /* ---------- 物語 ---------- */
 async function play(){
-  S.count = 0; S.choice = ""; save();
+  S.count = 0; S.choice1 = ""; S.choice = ""; S.why = ""; save();
   $("end").classList.add("hidden"); $("counter").classList.add("hidden");
   $("lily").setAttribute("opacity", 0); $("star").setAttribute("opacity", 0); $("star").classList.remove("on");
   setFlower(0, 0); growLeaves(0);
@@ -298,6 +314,8 @@ async function play(){
   await say(N("枕元に座っていると、あおむきに寝た女が、静かな声で言う。") + "<br>" + Q("「もう死にます。」")); await next();
   await say(N("女は、こう頼んだ。") + "<br>" + Q("「百年待っていてください。」")); await next();
   await say(Q("「百年、私の墓のそばに座って待っていてください。きっと会いに来ますから。」")); await next();
+  await say(N("あなたなら、なんと答えますか。"));
+  S.choice1 = await buttons([["待つ","wait",true],["待たない","quit",false]]); save();
   await say(Q("自分は、ただ待っていると答えた。")); await next();
   await say(N("女は死んだ。男は女を埋め、丸い石を墓にして、そのそばに座った。"));
   $("grave").setAttribute("opacity", 1);
@@ -338,7 +356,8 @@ async function play(){
 
   // 問いかけ
   await say(N("あなたなら、まだ待ちますか。"));
-  S.choice = await buttons([["まだ待つ","wait",true],["もう待たない","quit",false]]); save();
+  const c2 = await choose([["まだ待つ","wait",true],["もう待たない","quit",false]]);
+  S.choice = c2.val; S.why = c2.why; save();
   await say(N(S.choice==="wait" ? "男も、待ち続けた。" : "……けれど、男はそこを動かなかった。")); await sleep(1800);
 
   // 百合
@@ -361,14 +380,19 @@ async function play(){
 }
 
 function showEnd(){
+  const esc = t => t.replace(/[&<>"]/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
   $("log").innerHTML = `あなたが数えられた赤い日は <b>${kan(Math.max(S.count,1))}つ</b>。そのあとは、数えきれなくなりました。<br>`
-    + (S.choice==="quit" ? "あなたは「もう待たない」を選びました。それでも男は待ち続けました。" : "あなたは「まだ待つ」を選びました。");
+    + `女に頼まれたとき、あなたは<b>「${S.choice1==="quit"?"待たない":"待つ"}」</b><br>`
+    + `だまされたと思ったとき、あなたは<b>「${S.choice==="quit"?"もう待たない":"まだ待つ"}」</b>（理由：${esc(S.why)}）<br>`
+    + "男は、どちらのときも待ち続けました。";
   $("a1").value = S.a1; $("a2").value = S.a2;
   $("end").classList.remove("hidden");
 }
 ["a1","a2"].forEach(id => $(id).addEventListener("input", e => { S[id] = e.target.value; save(); }));
 function outText(){
   return ["【夢十夜「第一夜」　読む前の予想】",
+    `女に頼まれたとき：${S.choice1==="quit"?"待たない":"待つ"}`,
+    `だまされたと思ったとき：${S.choice==="quit"?"もう待たない":"まだ待つ"}（理由：${S.why}）`,
     `Q1 なぜ男は「百年はもう来ていた」と気がついたのか：${S.a1.trim() || "（未記入）"}`,
     `Q2 白い百合は何か：${S.a2.trim() || "（未記入）"}`].join("\n");
 }
