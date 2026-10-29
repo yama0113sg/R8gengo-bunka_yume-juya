@@ -76,7 +76,14 @@ svg#scene{width:100%;height:100%;max-height:66vh;display:block;overflow:visible}
       <radialGradient id="stoneG" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#a7abb2"/><stop offset="1" stop-color="#5d626b"/></radialGradient>
       <filter id="sunBlur" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="9"/></filter>
       <radialGradient id="sunG" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff5a3c"/><stop offset=".7" stop-color="#d2392a"/><stop offset="1" stop-color="#d2392a" stop-opacity="0"/></radialGradient>
-      <radialGradient id="petal" cx=".5" cy=".2" r=".9"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e6ece6"/></radialGradient>
+      <linearGradient id="tepF" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#d5e6c2"/><stop offset=".38" stop-color="#f9fcf4"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
+      <linearGradient id="tepB" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#b9cbab"/><stop offset=".4" stop-color="#e2e8db"/><stop offset="1" stop-color="#eef1ea"/></linearGradient>
+      <linearGradient id="leafG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3f7440"/><stop offset="1" stop-color="#6aa35c"/></linearGradient>
+      <filter id="lilyGlow" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b"/>
+        <feColorMatrix in="b" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .35 0" result="g"/>
+        <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
     </defs>
     <rect id="sky" x="-2000" y="-2000" width="4400" height="2340" fill="#0e1226"/>
     <circle id="star" cx="300" cy="70" r="3.2" fill="#fff" opacity="0"/>
@@ -84,17 +91,9 @@ svg#scene{width:100%;height:100%;max-height:66vh;display:block;overflow:visible}
     <rect x="-2000" y="330" width="4400" height="2000" fill="#1d1d1a"/>
     <rect x="-2000" y="330" width="4400" height="90" fill="url(#ground)"/>
     <g id="lily" opacity="0">
-      <path id="stem" d="M226 362 C 250 330, 238 280, 214 240 C 200 214, 196 196, 200 176" fill="none" stroke="#4d8f52" stroke-width="4" stroke-linecap="round"/>
-      <g id="flower" transform="translate(200 176) scale(0)">
-        <path d="M0 0 C -18 -10, -30 -38, -10 -62 C -4 -40, 2 -24, 0 0Z" fill="url(#petal)"/>
-        <path d="M0 0 C 18 -10, 30 -38, 10 -62 C 4 -40, -2 -24, 0 0Z" fill="url(#petal)"/>
-        <path d="M0 0 C -30 -4, -52 -22, -50 -46 C -32 -30, -14 -16, 0 0Z" fill="url(#petal)"/>
-        <path d="M0 0 C 30 -4, 52 -22, 50 -46 C 32 -30, 14 -16, 0 0Z" fill="url(#petal)"/>
-        <path d="M0 0 C -6 -20, 0 -48, 0 -70 C 2 -48, 6 -20, 0 0Z" fill="#fff"/>
-        <line x1="0" y1="-4" x2="-8" y2="-40" stroke="#c9a54a" stroke-width="1.2"/>
-        <line x1="0" y1="-4" x2="8" y2="-40" stroke="#c9a54a" stroke-width="1.2"/>
-      </g>
-      <ellipse id="bud" cx="200" cy="160" rx="7" ry="18" fill="#dfe8d8" opacity="0"/>
+      <path id="stem" d="M226 362 C 250 330, 238 280, 214 240 C 200 214, 194 196, 198 178" fill="none" stroke="#4f8a4a" stroke-width="4.5" stroke-linecap="round"/>
+      <g id="leaves"></g>
+      <g id="flower" filter="url(#lilyGlow)"></g>
     </g>
     <g id="grave" opacity="0" style="transition:opacity 1.6s">
       <ellipse cx="200" cy="364" rx="70" ry="10" fill="#0b0b09" opacity=".5"/>
@@ -216,12 +215,82 @@ function animate(ms, fn){
 }
 const ease = p => 1 - Math.pow(1-p, 3);
 
+/* ---------- 百合の絵 ---------- */
+const SVGNS = "http://www.w3.org/2000/svg";
+const el = (tag, attrs, parent) => { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+// 花びら（花被片）6枚：後ろの3枚、手前の3枚、おしべの順に重ねる。a は開いたときの角度
+const TEPALS = [
+  {a:-58, len:80, w:17, back:true}, {a:58, len:80, w:17, back:true}, {a:6, len:78, w:15, back:true},
+  {a:-30, len:94, w:21}, {a:32, len:94, w:21}, {a:-4, len:88, w:18}
+];
+function tepalD(len, w, c){
+  // 根元は細い筒、先へ行くほど広がり、先端は外へ反り返る
+  return `M0 0 C ${w*.2} ${-len*.2}, ${w*.3} ${-len*.42}, ${w*.75} ${-len*.66}`
+    + ` C ${w*1.05} ${-len*.82}, ${w*.9+c} ${-len*.98}, ${c*1.6+w*.2} ${-len*1.08}`
+    + ` C ${-w*.1+c*.8} ${-len*.98}, ${-w*.75} ${-len*.86}, ${-w*.7} ${-len*.66}`
+    + ` C ${-w*.35} ${-len*.45}, ${-w*.2} ${-len*.2}, 0 0Z`;
+}
+const FL = {tepals:[], stamens:null};
+(function buildFlower(){
+  const f = $("flower");
+  const mk = t => {
+    const g = el("g", {}, f);
+    const body = el("path", {fill: t.back ? "url(#tepB)" : "url(#tepF)", stroke: t.back ? "#c6d2bb" : "#dfe7d6", "stroke-width": .6}, g);
+    const rib = el("path", {fill:"none", stroke: t.back ? "#aebf9f" : "#c8d9b6", "stroke-width": .9, "stroke-linecap":"round"}, g);
+    FL.tepals.push({t, g, body, rib});
+  };
+  TEPALS.filter(t => t.back).forEach(mk);
+  el("ellipse", {cx:0, cy:-8, rx:7, ry:12, fill:"#c3d8a8"}, f);
+  TEPALS.filter(t => !t.back).forEach(mk);
+  FL.stamens = el("g", {opacity:0}, f);
+  [-16,-10,-4,4,10,16].forEach((d, i) => {
+    const L = 84 + (i%2)*6, r = d*Math.PI/180;
+    const x = Math.sin(r)*L, y = -Math.cos(r)*L;
+    el("path", {d:`M0 -20 Q ${x*.4} ${-L*.6}, ${x} ${y}`, fill:"none", stroke:"#e8ecd8", "stroke-width":1.2}, FL.stamens);
+    el("ellipse", {cx:x, cy:y, rx:2.3, ry:5.5, fill:"#a5552a", transform:`rotate(${d+80} ${x} ${y})`}, FL.stamens);
+  });
+  el("path", {d:"M0 -20 Q 2 -60, 1 -96", fill:"none", stroke:"#dfe8c8", "stroke-width":1.6}, FL.stamens);
+  el("circle", {cx:1, cy:-97, r:3.4, fill:"#bcd38e"}, FL.stamens);
+})();
+// e：開き具合 0（つぼみ）〜1、size：全体の大きさ
+function setFlower(e, size){
+  FL.tepals.forEach(({t, g, body, rib}) => {
+    const c = (t.a >= 0 ? 1 : -1) * (6 + Math.min(16, Math.abs(t.a)*.3)) * e;
+    const ang = t.a * (.06 + .94*e);
+    body.setAttribute("d", tepalD(t.len, t.w, c));
+    rib.setAttribute("d", `M0 -6 Q ${c*.2} ${-t.len*.6}, ${t.w*.3+c*1.2} ${-t.len*1.02}`);
+    g.setAttribute("transform", `rotate(${ang}) scale(${.42 + .58*e} ${.88 + .12*e})`);
+  });
+  FL.stamens.setAttribute("opacity", Math.max(0, (e-.55)/.45));
+  $("flower").setAttribute("transform", `translate(198 178) rotate(-12) scale(${size})`);
+}
+// 茎の葉：茎が伸びるのに合わせて順に出す
+const LEAVES = [];
+(function buildLeaves(){
+  const stem = $("stem"), len = stem.getTotalLength(), g = $("leaves");
+  [[.2,1,46],[.36,-1,42],[.52,1,36],[.66,-1,30]].forEach(([fr, side, L]) => {
+    const p = stem.getPointAtLength(len*fr), q = stem.getPointAtLength(len*fr + 1);
+    const tan = Math.atan2(q.y-p.y, q.x-p.x) * 180/Math.PI;
+    const leaf = el("g", {}, g);
+    el("path", {d:`M0 0 C ${L*.25} ${-7}, ${L*.7} ${-9}, ${L} ${-2} C ${L*.65} ${3}, ${L*.25} ${4}, 0 0Z`, fill:"url(#leafG)"}, leaf);
+    el("path", {d:`M0 0 Q ${L*.5} ${-3}, ${L*.95} ${-2}`, fill:"none", stroke:"#355f33", "stroke-width":.7}, leaf);
+    LEAVES.push({leaf, fr, base:`translate(${p.x} ${p.y}) rotate(${tan + side*58}) scale(1 ${side})`});
+  });
+})();
+function growLeaves(p){
+  LEAVES.forEach(({leaf, fr, base}) => {
+    const k = Math.max(0, Math.min(1, (p - fr) / .18));
+    leaf.setAttribute("transform", `${base} scale(${k})`);
+  });
+}
+setFlower(0, 0); growLeaves(0);
+
 /* ---------- 物語 ---------- */
 async function play(){
   S.count = 0; S.choice = ""; save();
   $("end").classList.add("hidden"); $("counter").classList.add("hidden");
   $("lily").setAttribute("opacity", 0); $("star").setAttribute("opacity", 0); $("star").classList.remove("on");
-  $("flower").setAttribute("transform","translate(200 176) scale(0)"); $("bud").setAttribute("opacity",0);
+  setFlower(0, 0); growLeaves(0);
   SKY.base = 0; SKY.amp = .9; $("sun").removeAttribute("filter"); $("sun").setAttribute("opacity", 1);
   setMoss(0); sunAt(0); $("grave").setAttribute("opacity", 0);
 
@@ -277,12 +346,11 @@ async function play(){
   stem.style.strokeDasharray = len; stem.style.strokeDashoffset = len;
   $("lily").setAttribute("opacity", 1);
   await say(N("すると、石の下から青い茎が伸びてきた。"));
-  await animate(3200, p => stem.style.strokeDashoffset = len*(1-ease(p)));
-  $("bud").setAttribute("opacity", 1);
-  await sleep(900);
+  await animate(3200, p => { stem.style.strokeDashoffset = len*(1-ease(p)); growLeaves(ease(p)); });
+  await animate(1000, p => setFlower(0, .55*ease(p)));
+  await sleep(700);
   await say(N("そして、真っ白な百合が花びらを開いた。"));
-  $("bud").setAttribute("opacity", 0);
-  await animate(2200, p => $("flower").setAttribute("transform", `translate(200 176) scale(${ease(p)*1.15})`));
+  await animate(2800, p => { const e = ease(p); setFlower(e, .55 + .45*e); });
   await next();
   // 夜明けと星
   await animate(2500, p => { paintSky(mix("#0e1226","#3d4f7a",p)); $("star").setAttribute("opacity", p); });
