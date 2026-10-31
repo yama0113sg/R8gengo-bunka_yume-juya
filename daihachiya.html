@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>第八夜　床屋の鏡の前で</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#211a14; --ink:#f1ece4; --sub:#b4a998; --line:rgba(255,255,255,.14);
+  --red:#c8452f; --card:#2c231b;
+  --mincho:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --gothic:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--gothic);-webkit-text-size-adjust:100%;overflow-x:hidden}
+body{--panelH:230px}
+@media(max-width:560px){body{--panelH:250px}.text{font-size:19px}}
+rt{font-size:.5em;color:var(--sub)}
+
+/* 文字欄の高さを固定し、文が変わっても絵が動かないようにする */
+.stage{position:fixed;top:0;left:0;right:0;bottom:calc(var(--panelH) + env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:center;overflow:hidden}
+svg#scene{width:100%;height:100%;max-height:70vh;display:block;overflow:hidden}
+.scn{transition:opacity 1s}
+.counter{position:absolute;top:10px;left:0;right:0;text-align:center;font-family:var(--mincho);font-weight:800;color:var(--ink);text-shadow:0 2px 10px rgba(0,0,0,.8);pointer-events:none;display:flex;justify-content:center;gap:28px}
+.counter div{font-size:34px;letter-spacing:.06em}
+.counter small{display:block;font-size:13px;font-weight:700;letter-spacing:.15em;color:#e6dccb;font-family:var(--gothic)}
+.counter .fix{color:#ffd9a0}
+.sfx{position:absolute;font-family:var(--mincho);font-weight:800;font-size:26px;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.9);pointer-events:none;opacity:0;animation:sfx 1.4s ease-out forwards;white-space:nowrap}
+@keyframes sfx{0%{opacity:0;transform:translateY(8px)}20%{opacity:1}75%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
+/* まぶた */
+.lid{position:absolute;left:0;right:0;height:51%;background:#050403;transform:scaleY(0);transition:transform .9s ease-in-out;pointer-events:none;z-index:2}
+.lid.top{top:0;transform-origin:top}
+.lid.bot{bottom:0;transform-origin:bottom}
+.closed .lid{transform:scaleY(1)}
+
+.panel{position:fixed;left:0;right:0;bottom:0;height:calc(var(--panelH) + env(safe-area-inset-bottom));overflow-y:auto;background:#17130f;z-index:3;padding:14px 16px calc(18px + env(safe-area-inset-bottom))}
+.panel .in{max-width:760px;margin:0 auto}
+.text{font-family:var(--mincho);font-size:21px;line-height:1.9;min-height:4.2em;letter-spacing:.03em;opacity:0;transform:translateY(6px);transition:opacity .5s,transform .5s}
+.text.show{opacity:1;transform:none}
+.text .q{color:#fff}
+.text .nar{color:var(--sub);font-family:var(--gothic);font-size:17px}
+.btns{display:flex;gap:10px;margin-top:12px;min-height:54px}
+.btns button{flex:1;font:inherit;font-size:17px;font-weight:700;padding:15px 10px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.08);color:var(--ink);cursor:pointer}
+.btns button.main{background:var(--red);border-color:var(--red);color:#fff}
+.hidden{display:none!important}
+
+.title{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:radial-gradient(70% 60% at 50% 40%,#3a2c1f,var(--bg));padding:24px 16px;text-align:center}
+.title h1{font-family:var(--mincho);font-size:46px;margin:0;letter-spacing:.2em}
+.title p{margin:0;color:var(--sub);font-size:16px;line-height:1.8}
+.title button{font:inherit;font-size:18px;font-weight:700;padding:14px 40px;border-radius:999px;border:0;background:var(--red);color:#fff;cursor:pointer}
+
+.end{position:fixed;inset:0;z-index:30;overflow:auto;background:rgba(24,19,14,.95);padding:28px 16px 40px}
+.end .in{max-width:680px;margin:0 auto}
+.end h2{font-family:var(--mincho);font-size:24px;margin:0 0 10px}
+.end table{width:100%;border-collapse:collapse;margin:0 0 8px;font-size:15px}
+.end td{border-bottom:1px solid var(--line);padding:7px 4px;vertical-align:top}
+.end td:first-child{white-space:nowrap;color:var(--sub);padding-right:12px}
+.end .log{color:var(--sub);font-size:15px;margin:0 0 18px;line-height:1.8}
+.end .qbox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:0 0 14px}
+.end .qbox p{margin:0 0 8px;font-weight:700;line-height:1.7}
+.end textarea{width:100%;font:inherit;font-size:16px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#1a1511;color:var(--ink);resize:vertical}
+.end .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.end .row button{flex:1;min-width:180px;font:inherit;font-size:16px;font-weight:700;padding:13px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.08);color:var(--ink);cursor:pointer}
+.end .row button.main{background:var(--red);border-color:var(--red);color:#fff}
+.end .note{font-size:14px;color:var(--sub);line-height:1.7}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#fff;color:#111;padding:10px 18px;border-radius:999px;font-size:15px;opacity:0;transition:.3s;pointer-events:none;z-index:50}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="title" id="title">
+  <h1>第八夜</h1>
+  <p>これは、ある男が見た夢の話です。<br>男といっしょに、床屋の鏡の前に座ってみてください。</p>
+  <button id="startBtn">はじめる</button>
+</div>
+
+<div class="stage" id="stage">
+  <svg id="scene" viewBox="0 0 400 440" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+    <defs>
+      <clipPath id="glass"><rect x="38" y="28" width="324" height="384" rx="4"/></clipPath>
+      <clipPath id="win"><rect x="58" y="80" width="234" height="170"/></clipPath>
+      <linearGradient id="wood" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b4a2c"/><stop offset="1" stop-color="#3b2716"/></linearGradient>
+      <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".10"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset=".6" stop-color="#fff" stop-opacity=".05"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+      <linearGradient id="outside" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3f1ea"/><stop offset="1" stop-color="#e2dccd"/></linearGradient>
+      <radialGradient id="water" cx=".5" cy=".4" r=".6"><stop offset="0" stop-color="#6f9ea3"/><stop offset="1" stop-color="#3e6c74"/></radialGradient>
+    </defs>
+
+    <!-- 鏡の中 -->
+    <g id="mirrorScene" class="scn">
+      <rect x="24" y="14" width="352" height="412" rx="10" fill="url(#wood)"/>
+      <g clip-path="url(#glass)">
+        <g id="mview">
+          <rect x="-200" y="0" width="800" height="440" fill="#b49c76"/>
+          <rect x="-200" y="28" width="800" height="22" fill="#5e4128"/>
+          <!-- 窓と往来 -->
+          <rect x="58" y="80" width="234" height="170" fill="url(#outside)"/>
+          <g clip-path="url(#win)">
+            <rect x="40" y="128" width="270" height="130" fill="#cbbfa6"/>
+            <rect x="40" y="122" width="270" height="8" fill="#7a6650"/>
+            <g stroke="#a99a80" stroke-width="2">
+              <line x1="80" y1="130" x2="80" y2="250"/><line x1="140" y1="130" x2="140" y2="250"/><line x1="200" y1="130" x2="200" y2="250"/><line x1="260" y1="130" x2="260" y2="250"/>
+            </g>
+            <g id="street"></g>
+            <g id="bike" opacity="0">
+              <line x1="140" y1="238" x2="236" y2="226" stroke="#5a2a20" stroke-width="5" stroke-linecap="round"/>
+              <line x1="140" y1="246" x2="232" y2="236" stroke="#5a2a20" stroke-width="4" stroke-linecap="round"/>
+              <g stroke="#2d2a28" fill="none">
+                <circle cx="252" cy="256" r="26" stroke-width="4"/>
+                <circle cx="252" cy="256" r="3" fill="#2d2a28"/>
+                <g stroke-width="1.2" id="spokes"></g>
+              </g>
+            </g>
+          </g>
+          <g fill="none" stroke="#5e4128">
+            <rect x="58" y="80" width="234" height="170" stroke-width="7"/>
+            <line x1="136" y1="80" x2="136" y2="250" stroke-width="4"/>
+            <line x1="214" y1="80" x2="214" y2="250" stroke-width="4"/>
+          </g>
+          <!-- 帳場格子（斜めに見える）。女は格子のうしろ -->
+          <g id="woman" opacity="0">
+            <path d="M368 300 C 368 262 378 246 398 244 C 420 246 430 262 432 300 Z" fill="#2f2a2c"/>
+            <path d="M390 246 L 398 266 L 406 246" fill="none" stroke="#0d0b0b" stroke-width="5"/>
+            <circle cx="399" cy="228" r="13" fill="#b98a62"/>
+            <path d="M385 226 C 382 206 394 198 402 199 C 414 199 418 212 414 224 C 410 214 398 210 388 222 Z" fill="#141010"/>
+            <path d="M400 202 C 392 190 404 182 412 188 C 420 194 414 204 404 203 Z" fill="#141010"/>
+            <path d="M393 230 l5 1 M403 231 l5 -1" stroke="#3a2a22" stroke-width="1.4"/>
+            <rect x="384" y="268" width="26" height="12" fill="#e8e1cf" transform="rotate(-8 397 274)"/>
+            <rect id="bill" x="386" y="264" width="24" height="11" fill="#f2ecdc" transform="rotate(-8 397 270)"/>
+            <circle cx="386" cy="276" r="5" fill="#b98a62"/><circle cx="410" cy="272" r="5" fill="#b98a62"/>
+          </g>
+          <g id="lattice">
+            <polygon points="318,272 460,256 460,392 318,396" fill="#3a2716" opacity=".55"/>
+            <g id="latticeBars" stroke="#2a1b0e" stroke-width="3"></g>
+          </g>
+          <!-- 白い男 -->
+          <g id="barber" opacity="0">
+            <path d="M262 440 L 268 252 C 270 216 286 202 304 200 C 330 202 346 216 350 252 L 362 440 Z" fill="#f4f3ee" stroke="#d6d1c3"/>
+            <circle cx="305" cy="174" r="24" fill="#c99b70"/>
+            <path d="M281 170 C 280 148 296 142 306 142 C 320 142 330 150 329 170 C 322 158 296 156 281 170 Z" fill="#241c16"/>
+            <path d="M296 178 l7 0 M310 178 l7 0" stroke="#3a2a22" stroke-width="1.6"/>
+            <path d="M292 214 C 272 224 248 242 230 262 L 242 276 C 258 260 278 248 298 240 Z" fill="#f4f3ee" stroke="#d6d1c3"/>
+            <path d="M252 250 C 248 264 250 276 258 286 L 270 270 C 266 262 266 254 268 244 Z" fill="#ebe8df" stroke="#d6d1c3"/>
+            <circle cx="232" cy="268" r="7" fill="#c99b70"/>
+            <g stroke="#c4c9d0" stroke-width="2.4" stroke-linecap="round"><line x1="226" y1="262" x2="206" y2="248"/><line x1="226" y1="268" x2="204" y2="258"/></g>
+            <rect x="338" y="262" width="22" height="7" rx="2" fill="#c98a2e" transform="rotate(-20 349 265)"/>
+          </g>
+          <!-- 鏡に映った自分 -->
+          <g id="self">
+            <path d="M88 440 C 98 382 150 364 200 364 C 250 364 302 382 312 440 Z" fill="#f2f0ea" stroke="#d9d4c8"/>
+            <rect x="184" y="340" width="32" height="30" fill="#c69a70"/>
+            <ellipse cx="151" cy="322" rx="7" ry="12" fill="#c69a70"/><ellipse cx="249" cy="322" rx="7" ry="12" fill="#c69a70"/>
+            <ellipse cx="200" cy="318" rx="48" ry="56" fill="#d4a97e"/>
+            <path id="hair" d="M152 314 C 148 262 178 254 200 254 C 224 254 254 262 248 314 C 244 290 230 278 200 276 C 172 278 158 290 152 314 Z" fill="#2a221c"/>
+            <path d="M178 306 l12 -2 M210 304 l12 2" stroke="#2a221c" stroke-width="2.4" stroke-linecap="round"/>
+            <ellipse cx="187" cy="318" rx="4" ry="3" fill="#2a221c"/><ellipse cx="213" cy="318" rx="4" ry="3" fill="#2a221c"/>
+            <path d="M200 322 l-4 14 l6 0" fill="none" stroke="#b08460" stroke-width="1.6"/>
+            <path d="M186 346 q 6 -4 13 -1 M201 345 q 7 -3 13 1" fill="none" stroke="#3a2c22" stroke-width="1.3"/>
+            <path d="M190 356 q 10 4 20 0" fill="none" stroke="#9a6a4c" stroke-width="1.6"/>
+          </g>
+        </g>
+        <rect x="38" y="28" width="324" height="384" fill="url(#sheen)" pointer-events="none"/>
+      </g>
+    </g>
+
+    <!-- ふり返って見た帳場格子 -->
+    <g id="choubaScene" class="scn" opacity="0">
+      <rect x="0" y="0" width="400" height="440" fill="#b49c76"/>
+      <rect x="0" y="40" width="400" height="22" fill="#5e4128"/>
+      <rect x="0" y="330" width="400" height="110" fill="#6e5034"/>
+      <rect x="150" y="300" width="100" height="40" fill="#4a3220"/>
+      <rect x="164" y="336" width="72" height="22" rx="6" fill="#5b3a52"/>
+      <rect x="60" y="214" width="280" height="10" fill="#3a2716"/>
+      <rect x="60" y="384" width="280" height="10" fill="#3a2716"/>
+      <g id="bigBars" stroke="#3a2716" stroke-width="5"></g>
+    </g>
+
+    <!-- 表 -->
+    <g id="frontScene" class="scn" opacity="0">
+      <rect x="0" y="0" width="400" height="440" fill="#e3dccb"/>
+      <rect x="0" y="120" width="400" height="180" fill="#bfae92"/>
+      <rect x="0" y="112" width="400" height="12" fill="#6e5a44"/>
+      <g stroke="#a39377" stroke-width="2"><line x1="60" y1="124" x2="60" y2="300"/><line x1="150" y1="124" x2="150" y2="300"/><line x1="250" y1="124" x2="250" y2="300"/><line x1="340" y1="124" x2="340" y2="300"/></g>
+      <rect x="0" y="292" width="400" height="148" fill="#a3916f"/>
+      <g id="walkers"></g>
+      <!-- 金魚売（頬杖をついて動かない） -->
+      <g id="seller">
+        <path d="M166 352 C 166 304 178 286 200 284 C 222 286 236 304 236 352 Z" fill="#3e3a46"/>
+        <circle cx="207" cy="262" r="15" fill="#c69a70"/>
+        <path d="M192 258 C 192 244 202 240 210 240 C 220 240 224 248 222 258 C 216 250 200 250 192 258 Z" fill="#2a221c"/>
+        <path d="M200 266 l6 1 M211 267 l5 -1" stroke="#3a2a22" stroke-width="1.4"/>
+        <line x1="228" y1="324" x2="217" y2="282" stroke="#3e3a46" stroke-width="11" stroke-linecap="round"/>
+        <circle cx="216" cy="277" r="6" fill="#c69a70"/>
+      </g>
+      <g id="tubs"></g>
+    </g>
+
+    <g id="hairs"></g>
+  </svg>
+  <div class="counter hidden" id="counter"></div>
+  <div class="lid top"></div><div class="lid bot"></div>
+</div>
+
+<div class="panel">
+  <div class="in">
+    <div class="text" id="text"></div>
+    <div class="btns" id="btns"></div>
+  </div>
+</div>
+
+<div class="end hidden" id="end">
+  <div class="in">
+    <h2>「金魚売はちっとも動かなかった。」</h2>
+    <table id="log"></table>
+    <p class="log" id="sum"></p>
+    <div class="qbox">
+      <p>Q1．床屋の椅子に座っている間、「自分」はどんな気持ちだったと思う？　体験して感じたことから書いてみよう。</p>
+      <textarea id="a1" rows="3" placeholder="今の予想でかまいません"></textarea>
+    </div>
+    <div class="qbox">
+      <p>Q2．「自分」が眺めている間、金魚売はちっとも動かなかった。なぜだと思う？</p>
+      <textarea id="a2" rows="3" placeholder="今の予想でかまいません"></textarea>
+    </div>
+    <p class="note">このあと本文を読みます。窓の外を通った人の名前、豆腐屋の顔、帳場の女の姿や札、金魚のようすなど、ゲームに出てこなかったところにも注意して読みましょう。</p>
+    <div class="row">
+      <button class="main" id="copyBtn">予想をコピーする（ロイロ用）</button>
+      <button id="againBtn">もう一度はじめから</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const KEY = "yume_daihachiya_v1";
+let S = {a1:"", a2:"", look:{}, eyes:"", saw:""};
+try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s) S = Object.assign(S, s); }catch(e){}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+// 「」は本文の引用（表記は教科書の第一夜に合わせる）、nar はゲームの語り
+const Q = s => `<span class="q">${s}</span>`, N = s => `<span class="nar">${s}</span>`;
+const R = (k, r) => `<ruby>${k}<rt>${r}</rt></ruby>`;
+const KANJO = R("勘定","かんじょう"), HASAMI = R("鋏","はさみ"), CHOUBA = R("帳場格子","ちょうばごうし");
+
+/* ---------- 文字と操作 ---------- */
+async function say(html){
+  const t = $("text"); t.classList.remove("show"); await sleep(250);
+  t.innerHTML = html; t.classList.add("show");
+}
+function buttons(list){
+  return new Promise(res => {
+    const b = $("btns"); b.innerHTML = "";
+    list.forEach(([label, val, main]) => {
+      const el = document.createElement("button"); el.textContent = label; if (main) el.className = "main";
+      el.addEventListener("click", () => { b.innerHTML = ""; res(val); }, {once:true});
+      b.appendChild(el);
+    });
+  });
+}
+const next = (label="次へ") => buttons([[label, true, true]]);
+function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(toast.h); toast.h=setTimeout(()=>t.classList.remove("show"),1800); }
+function sfx(text, left, top){
+  const d = document.createElement("div"); d.className = "sfx"; d.textContent = text;
+  d.style.left = left; d.style.top = top; $("stage").appendChild(d);
+  setTimeout(() => d.remove(), 1500);
+}
+function animate(ms, fn){
+  return new Promise(res => {
+    const t0 = performance.now();
+    (function f(now){ const p = Math.min(1,(now-t0)/ms); fn(p); p<1 ? requestAnimationFrame(f) : res(); })(t0);
+  });
+}
+const ease = p => 1 - Math.pow(1-p, 3);
+const eyes = closed => $("stage").classList.toggle("closed", closed);
+function scene(name){
+  ["mirrorScene","choubaScene","frontScene"].forEach(id => $(id).setAttribute("opacity", id===name ? 1 : 0));
+}
+
+/* ---------- 絵の部品 ---------- */
+const SVGNS = "http://www.w3.org/2000/svg";
+const el = (tag, attrs, parent) => { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+(function build(){
+  for (let i=0; i<12; i++){ const a = i*Math.PI/6; el("line", {x1:252, y1:256, x2:252+Math.cos(a)*25, y2:256+Math.sin(a)*25}, $("spokes")); }
+  // 斜めの格子：左端 x=318 から右へ。上の辺は右ほど高い
+  for (let x=318; x<=460; x+=13){ const top = 272 - (x-318)*16/142; el("line", {x1:x, y1:top, x2:x, y2:396}, $("latticeBars")); }
+  el("line", {x1:318, y1:272, x2:460, y2:256, "stroke-width":5}, $("latticeBars"));
+  el("line", {x1:318, y1:330, x2:460, y2:322}, $("latticeBars"));
+  for (let x=66; x<=334; x+=15) el("line", {x1:x, y1:218, x2:x, y2:390}, $("bigBars"));
+})();
+
+// 窓の外を通る人（腰から上）。原点は腰の中央、窓の下の辺 y=250
+function person(kind, parent, dx=0){
+  const g = el("g", {transform:`translate(${dx} 0)`}, parent);
+  const col = {man:"#4b4038", woman:"#6a4058", tofu:"#3f4a52"}[kind];
+  if (kind==="woman"){
+    el("path", {d:"M-20 250 C -21 218 -16 204 -8 200 L 8 200 C 16 204 21 218 20 250 Z", fill:col}, g);
+    el("circle", {cx:0, cy:186, r:11, fill:"#3a2c26"}, g);
+    el("ellipse", {cx:0, cy:172, rx:13, ry:8, fill:"#1d1614"}, g);
+    el("ellipse", {cx:0, cy:162, rx:8, ry:6, fill:"#1d1614"}, g);
+  } else {
+    el("path", {d:"M-25 250 C -26 214 -22 200 -10 196 L 10 196 C 22 200 26 214 25 250 Z", fill:col}, g);
+    el("circle", {cx:0, cy:181, r:13, fill:"#3a2c26"}, g);
+  }
+  if (kind==="man"){
+    el("ellipse", {cx:0, cy:170, rx:21, ry:4, fill:"#e6dcc0"}, g);
+    el("path", {d:"M-11 170 L -10 157 C -4 154 4 154 10 157 L 11 170 Z", fill:"#e6dcc0"}, g);
+    el("rect", {x:-11, y:165, width:22, height:3, fill:"#2b2522"}, g);
+  }
+  if (kind==="tofu"){
+    el("rect", {x:-13, y:170, width:26, height:5, fill:"#e9e6dc"}, g);
+    el("circle", {cx:-9, cy:186, r:6, fill:"#3a2c26"}, g);
+    el("line", {x1:-10, y1:186, x2:-36, y2:180, stroke:"#b39b54", "stroke-width":3}, g);
+    el("path", {d:"M-36 180 l-8 -6 l0 14 Z", fill:"#b39b54"}, g);
+  }
+  return g;
+}
+// 表の往来を行き交う人
+const WALK = [];
+(function buildWalkers(){
+  const cols = ["#5b4b40","#4a5560","#6d4a52","#3f3a35","#5f5a48","#704b3a","#47505a"];
+  for (let i=0; i<7; i++){
+    const g = el("g", {}, $("walkers"));
+    const s = .8 + (i%3)*.12, dir = i%2 ? 1 : -1;
+    el("path", {d:"M-9 -50 L 9 -50 L 13 -8 L 6 0 L -6 0 L -13 -8 Z", fill:cols[i]}, g);
+    el("circle", {cx:0, cy:-57, r:7, fill:"#2e2622"}, g);
+    WALK.push({g, s, dir, x: 30 + i*55, y: 296 + (i%3)*5, v: 26 + (i*7)%20});
+  }
+})();
+let walkSpeed = 0, walkTick = 0;
+function walkFrame(now){
+  const dt = Math.min(.05, (now - (walkFrame.t || now)) / 1000); walkFrame.t = now;
+  WALK.forEach(w => {
+    w.x += w.dir * w.v * walkSpeed * dt;
+    if (w.x > 440) w.x = -40; if (w.x < -40) w.x = 440;
+    w.g.setAttribute("transform", `translate(${w.x} ${w.y}) scale(${w.s})`);
+  });
+  FISH.forEach(f => {
+    f.t += f.v * dt * (walkSpeed ? 1 : 0);
+    const x = f.cx + Math.cos(f.t)*f.rx, y = f.cy + Math.sin(f.t)*f.ry;
+    const ang = (Math.atan2(Math.cos(f.t)*f.ry, -Math.sin(f.t)*f.rx) * 180/Math.PI) + (f.v<0 ? 180 : 0);
+    f.g.setAttribute("transform", `translate(${x} ${y}) rotate(${ang})`);
+  });
+  walkTick = requestAnimationFrame(walkFrame);
+}
+// 小判形の桶が五つ。金魚は本文で確かめるので、色と大きさだけ
+const FISH = [];
+(function buildTubs(){
+  const cols = ["#d2392a","#e8603a","#f1e9dc","#d2392a","#c43a2a"];
+  [72,136,200,264,328].forEach((cx, i) => {
+    const g = el("g", {}, $("tubs"));
+    el("path", {d:`M${cx-30} 352 L ${cx-26} 384 C ${cx-14} 392 ${cx+14} 392 ${cx+26} 384 L ${cx+30} 352 Z`, fill:"#6b4a2c"}, g);
+    el("path", {d:`M${cx-29} 364 C ${cx-12} 372 ${cx+12} 372 ${cx+29} 364`, fill:"none", stroke:"#3b2716", "stroke-width":2}, g);
+    el("ellipse", {cx, cy:352, rx:30, ry:11, fill:"#5a3d22"}, g);
+    el("ellipse", {cx, cy:352, rx:26, ry:8.5, fill:"url(#water)"}, g);
+    for (let k=0; k<3; k++){
+      const f = el("g", {}, g);
+      el("ellipse", {cx:0, cy:0, rx:4.5, ry:2.2, fill: cols[(i+k)%5]}, f);
+      el("path", {d:"M-4 0 l-4 -3 l0 6 Z", fill: cols[(i+k)%5]}, f);
+      FISH.push({g:f, cx, cy:352, rx:15 - k*3, ry:4 - k*.8, t: i+k*2.1, v: (k%2 ? -1 : 1) * (.8 + k*.3)});
+    }
+  });
+})();
+
+/* ---------- 鏡の見え方（のぞく・横を向かされる・目をこらす） ---------- */
+const M = {x:0, s:1};
+function setMirror(){ $("mview").setAttribute("transform", `translate(${M.x} 0) translate(175 165) scale(${M.s}) translate(-175 -165)`); }
+async function tween(key, to, ms){ const from = M[key]; await animate(ms, p => { M[key] = from + (to-from)*ease(p); setMirror(); }); }
+
+// 窓の外を人が通る。「よく見る」を押しても、押さなくても、通り過ぎてしまう
+async function passBy(kinds, ms){
+  const g = el("g", {}, $("street"));
+  kinds.forEach((k, i) => person(k, g, i*42));
+  const span = 42*(kinds.length-1);
+  const walk = animate(ms, p => g.setAttribute("transform", `translate(${330 - (300+span)*p} 0)`));
+  const r = await Promise.race([walk.then(() => "gone"), buttons([["よく見る", "look", true]])]);
+  $("btns").innerHTML = "";
+  if (r === "look"){ await tween("s", 1.3, 700); await walk; await sleep(300); await tween("s", 1, 700); }
+  g.remove();
+  return r === "look";
+}
+// 鋏が鳴るたびに、黒い毛が手前へ飛んでくる
+function snip(n=6){
+  sfx("ちゃきちゃき", "48%", "18%");
+  for (let i=0; i<n; i++){
+    const a = -Math.PI*(.15 + Math.random()*.7), d = 90 + Math.random()*120;
+    const h = el("path", {d:"M0 0 q 4 -3 9 -1", fill:"none", stroke:"#120d0a", "stroke-width":1.8, "stroke-linecap":"round"}, $("hairs"));
+    const x0 = 180 + Math.random()*40, y0 = 270, rot = Math.random()*360;
+    animate(900 + Math.random()*400, p => {
+      h.setAttribute("transform", `translate(${x0 + Math.cos(a)*d*p} ${y0 + Math.sin(a)*d*p + 140*p*p}) rotate(${rot + 200*p}) scale(${1 + p*1.8})`);
+      h.setAttribute("opacity", 1 - p*p);
+    }).then(() => h.remove());
+  }
+}
+function fade(id, to, ms){ const e = $(id), from = +e.getAttribute("opacity"); return animate(ms, p => e.setAttribute("opacity", from + (to-from)*p)); }
+function setBarberSide(left){ $("barber").setAttribute("transform", left ? "translate(400 0) scale(-1 1)" : ""); }
+
+/* ---------- 札の勘定 ---------- */
+let billTimer = 0, billCount = 0;
+function startBills(){
+  billCount = 0; $("counter").classList.remove("hidden");
+  const draw = () => $("counter").innerHTML = `<div>${billCount}枚<small>女が数えた札</small></div><div class="fix">100枚<small>膝の上の札</small></div>`;
+  draw();
+  billTimer = setInterval(() => {
+    billCount++; draw();
+    $("bill").setAttribute("transform", `rotate(${billCount%2 ? -30 : -8} 397 270)`);
+  }, 50);
+}
+function stopBills(){ clearInterval(billTimer); $("counter").classList.add("hidden"); }
+
+/* ---------- 物語 ---------- */
+async function play(){
+  S.look = {}; S.eyes = ""; S.saw = ""; save();
+  $("end").classList.add("hidden"); stopBills(); eyes(false);
+  scene("mirrorScene"); M.x = 0; M.s = 1; setMirror();
+  ["barber","bike","woman"].forEach(id => $(id).setAttribute("opacity", 0)); setBarberSide(false);
+  $("street").innerHTML = ""; $("hairs").innerHTML = ""; walkSpeed = 0;
+
+  await say(Q(`床屋の${R("敷居","しきい")}をまたいだら、白い着物を着てかたまっていた三、四人が、一度にいらっしゃいと言った。`)); await next();
+  await say(N("四角な部屋である。二方に窓が開いて、残る二方に鏡が掛かっている。") + "<br>" + Q(`鏡の数を${KANJO}したら六つあった。`)); await next();
+  await say(Q("自分はその一つの前へ来て腰を下ろした。") + "<br>" + N("鏡には自分の顔が映った。顔の後ろには、窓が見える。")); await next();
+  await say(N("窓の外を通る人の、腰から上がよく見える。")); await next();
+
+  // 窓の外を通る人
+  await say(N("知っている男が、女を連れて通る。二人とも、得意そうだ。<br>女の顔を、よく見てみよう。"));
+  S.look.couple = await passBy(["man","woman"], 4200); save();
+  await say(Q("よく女の顔を見ようと思ううちに通り過ぎてしまった。")); await next();
+  await say(N("ラッパを吹きながら、豆腐屋が通る。"));
+  sfx("プウー", "16%", "22%");
+  S.look.tofu = await passBy(["tofu"], 3600); save();
+  await say(Q(`${R("膨","ふく")}れたまんまで通り越したものだから、気がかりでたまらない。`)); await next();
+
+  // 白い男
+  await fade("barber", 1, 900);
+  await say(N(`白い着物を着た大きな男が後ろへ来て、${HASAMI}と${R("櫛","くし")}を持って自分の頭を眺め出した。`)); await next();
+  await say(Q("「さあ、頭もだが、どうだろう、物になるだろうか」と自分は白い男に聞いた。")); await next();
+  await say(N(`白い男は何も答えない。ちゃきちゃきと${HASAMI}を鳴らし始めた。`));
+  snip(); await sleep(900); snip(); await next();
+  await say(Q(`鏡に映る影を一つ残らず見るつもりで目をみはっていたが、${HASAMI}の鳴るたんびに黒い毛が飛んで来る……`));
+  snip(8);
+  S.eyes = await buttons([["がまんして見続ける","keep",false],["目を閉じる","close",true]]); save();
+  if (S.eyes === "keep"){
+    for (let i=0; i<3; i++){ snip(10); await sleep(700); }
+  }
+  await say(Q("恐ろしくなって、やがて目を閉じた。")); eyes(true); await sleep(1000); await next();
+
+  // 目を閉じている間
+  await say(N("すると白い男が、こう言った。") + "<br>" + Q(`「${R("旦那","だんな")}は表の金魚売を御覧なすったか」`)); await next();
+  await say(N("あなたは、見ましたか。"));
+  S.saw = await buttons([["見た","yes",false],["見ない","no",true]]); save();
+  await say((S.saw==="yes" ? N("……けれど、") : "") + Q("自分は見ないと言った。") + "<br>" + N(`白い男はそれきりで、しきりと${HASAMI}を鳴らしていた。`));
+  sfx("ちゃきちゃき", "48%", "18%"); await next();
+  await say(Q(`すると突然大きな声で${R("危険","あぶね")}えと言ったものがある。`));
+  sfx("あぶねえ！", "12%", "40%");
+  await buttons([["目を開ける", true, true]]);
+  $("bike").setAttribute("opacity", 1); eyes(false); await sleep(700);
+  await say(Q(`白い男の${R("袖","そで")}の下に自転車の輪が見えた。${R("人力","じんりき")}の${R("梶棒","かじぼう")}が見えた。`));
+  S.look.bike = (await Promise.race([buttons([["よく見る", "look", true]]), sleep(3500).then(() => "")])) === "look"; save();
+  $("btns").innerHTML = "";
+  await tween("x", -175, 450);
+  await fade("bike", 0, 300);
+  await say(Q("と思うと、白い男が両手で自分の頭を押さえてうんと横へ向けた。自転車と人力車はまるで見えなくなった。"));
+  sfx("ちゃきちゃき", "48%", "18%"); await next();
+
+  // 耳を刈る。音はするのに、鏡には出てこない
+  await fade("barber", 0, 400); setBarberSide(true); await tween("x", 0, 900); await fade("barber", 1, 500);
+  await say(N("白い男は横へ回って、耳のところを刈り始めた。毛が前の方へ飛ばなくなったので、目を開けた。")); await next();
+  await say(Q(`${R("粟餅","あわもち")}や、餅やあ、餅や、と言う声がすぐ、そこでする。`));
+  sfx("トン、トトン", "70%", "30%");
+  await next();
+  await say(N("子どもの時に見たきりの粟餅屋。ちょっと、様子が見たい。"));
+  await buttons([["鏡の角をのぞく", true, true]]);
+  await tween("x", -30, 800); sfx("トン、トトン", "70%", "30%");
+  await say(N("鏡の中には、出てこない。"));
+  await buttons([["もっとのぞく", true, true]]);
+  await tween("x", -55, 800); sfx("トン、トトン", "70%", "30%");
+  await say(Q(`けれども粟餅屋はけっして鏡の中に出て来ない。ただ餅を${R("搗","つ")}く音だけする。`)); await next();
+  await say(N("ありったけの力で、鏡の角をのぞきこむ。"));
+  await buttons([["のぞきこむ", true, true]]);
+  await Promise.all([tween("x", -95, 1600), fade("woman", 1, 1600)]);
+  await say(Q(`すると${CHOUBA}のうちに、いつの間にか一人の女が座っている。`)); await next();
+  await say(N("女は膝の上の札を数えている。その数え方が、いかにも早い。"));
+  startBills(); await sleep(2500); await next();
+  await say(N("膝の上の札は、百枚ぐらい。……"));
+  await sleep(3000); await next();
+  await say(Q(`その百枚がいつまで${KANJO}しても百枚である。`)); await next();
+  await say(N("自分はぼうぜんとして、女の顔と札を見つめていた。")); await next();
+  await say(Q("すると耳の元で白い男が大きな声で「洗いましょう」と言った。")); await next();
+  await say(N("ちょうどいい。椅子から立ち上がって――"));
+  await buttons([["ふり返る", true, true]]);
+  stopBills(); scene("choubaScene"); await sleep(900);
+  await say(Q("けれども格子のうちには女も札も何にも見えなかった。")); await next();
+
+  // 表へ
+  await say(N(`${R("代","だい")}を払って、表へ出た。`));
+  scene("frontScene"); walkSpeed = 1; await sleep(900); await next();
+  await say(N("門口の左側に、桶が五つばかり並べてあって、金魚がたくさん入れてあった。そうして、その後ろに金魚売がいた。")); await next();
+  await say(N("白い男が言っていた、表の金魚売だ。しばらく、眺めてみよう。"));
+  const LINES = ["往来は、騒がしい。", "人が、次々に通り過ぎていく。", "桶の中で、金魚が泳いでいる。"];
+  for (let i=0; i<3; i++){
+    await buttons([["眺める", true, true]]);
+    walkSpeed = 1.6 + i*.6;
+    await say(N(LINES[i])); await sleep(1400);
+  }
+  await say(Q("けれども自分が眺めている間、金魚売はちっとも動かなかった。")); await next("おわり");
+  showEnd();
+}
+
+const LOG = () => [
+  ["窓の外の男と女", S.look.couple ? "よく見ようとした → 通り過ぎてしまった" : "通り過ぎてしまった"],
+  ["ラッパの豆腐屋", S.look.tofu ? "よく見ようとした → 通り過ぎてしまった" : "通り過ぎてしまった"],
+  ["黒い毛が飛んできたとき", S.eyes === "keep" ? "がまんして見続けた → 目を閉じた" : "目を閉じた"],
+  ["表の金魚売を見たか", S.saw === "yes" ? "「見た」と思った → 自分は「見ない」と言った" : "見ない"],
+  ["自転車と人力車", (S.look.bike ? "よく見ようとした → " : "") + "頭を横へ向けられて、見えなくなった"],
+  ["粟餅屋", "声と音だけで、鏡に出てこない"],
+  ["帳場の女", "ふり返ると、女も札もいなかった"],
+  ["金魚売", "ちっとも動かなかった"]
+];
+function showEnd(){
+  walkSpeed = 0;
+  $("log").innerHTML = LOG().map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("");
+  $("sum").innerHTML = "見ようとしたものを、最後まで見届けることはできましたか。";
+  $("a1").value = S.a1; $("a2").value = S.a2;
+  $("end").classList.remove("hidden");
+}
+["a1","a2"].forEach(id => $(id).addEventListener("input", e => { S[id] = e.target.value; save(); }));
+function outText(){
+  return ["【夢十夜「第八夜」　読む前の予想】",
+    ...LOG().slice(0, 5).map(([k, v]) => `${k}：${v}`),
+    `Q1 床屋にいる間の「自分」の気持ち：${S.a1.trim() || "（未記入）"}`,
+    `Q2 金魚売はなぜちっとも動かなかったのか：${S.a2.trim() || "（未記入）"}`].join("\n");
+}
+$("copyBtn").addEventListener("click", () => {
+  const text = outText();
+  const fallback = () => {
+    const ta = document.createElement("textarea"); ta.value = text; ta.setAttribute("readonly",""); ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, text.length);
+    let ok=false; try{ ok=document.execCommand("copy"); }catch(e){}
+    document.body.removeChild(ta); toast(ok ? "コピーしました" : "コピーできませんでした");
+  };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(()=>toast("コピーしました"), fallback);
+  else fallback();
+});
+$("againBtn").addEventListener("click", play);
+$("startBtn").addEventListener("click", () => { $("title").classList.add("hidden"); play(); });
+setMirror(); walkTick = requestAnimationFrame(walkFrame);
+</script>
+</body>
+</html>
