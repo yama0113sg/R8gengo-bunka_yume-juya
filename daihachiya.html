@@ -29,10 +29,16 @@ svg#scene{width:100%;height:100%;max-height:72vh;display:block;overflow:hidden}
 .grain,.vig{position:absolute;inset:0;pointer-events:none;z-index:1}
 .grain{opacity:.32;mix-blend-mode:multiply;background-size:220px 220px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .25  0 0 0 0 .18  0 0 0 0 .1  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
 .vig{background:radial-gradient(75% 70% at 50% 48%,transparent 55%,rgba(16,11,6,.7))}
-.counter{position:absolute;top:10px;left:0;right:0;text-align:center;font-family:var(--mincho);font-weight:800;color:var(--ink);text-shadow:0 2px 10px rgba(0,0,0,.85);pointer-events:none;display:flex;justify-content:center;gap:28px;z-index:2}
-.counter div{font-size:32px;letter-spacing:.06em}
-.counter small{display:block;font-size:13px;font-weight:700;letter-spacing:.15em;color:#e6dccb;font-family:var(--gothic)}
-.counter .fix{color:#f3cf94}
+/* 札の束の拡大：一枚数えても、膝の上は百枚のまま */
+.billbox{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:2;display:flex;align-items:center;gap:14px;padding:10px 18px;border-radius:16px;background:rgba(24,18,12,.9);border:1px solid var(--line);box-shadow:0 6px 24px rgba(0,0,0,.5);font-family:var(--mincho);white-space:nowrap;pointer-events:none}
+.billbox svg{width:110px;height:70px;flex:none}
+.billbox .nums{display:flex;gap:18px}
+.billbox .nums div{font-size:30px;font-weight:800;text-align:center;line-height:1.15}
+.billbox small{display:block;font:700 12px var(--gothic);color:var(--sub);letter-spacing:.1em}
+.billbox .lap{color:#f3cf94}
+.billbox .lap.drop{color:#ff9a7a}
+.billbox .lap.back{animation:back .7s ease-out}
+@keyframes back{0%{transform:scale(1.25)}100%{transform:none}}
 .sfx{position:absolute;z-index:2;font-family:var(--mincho);font-weight:800;font-size:24px;color:#fff6e6;text-shadow:0 2px 10px rgba(0,0,0,.9);pointer-events:none;opacity:0;animation:sfx 1.5s ease-out forwards;white-space:nowrap}
 @keyframes sfx{0%{opacity:0;transform:translateY(8px)}20%{opacity:1}75%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
 /* まぶた */
@@ -198,7 +204,10 @@ svg#scene{width:100%;height:100%;max-height:72vh;display:block;overflow:hidden}
     <g id="hairs"></g>
   </svg>
   <div class="grain"></div><div class="vig"></div>
-  <div class="counter hidden" id="counter"></div>
+  <div class="billbox hidden" id="billbox">
+    <svg viewBox="0 0 110 70" aria-hidden="true"><g id="stack"></g><g id="fly"></g></svg>
+    <div class="nums"><div><span id="cnt">0</span>枚<small>数えた札</small></div><div class="lap" id="lapBox"><span id="lap">100</span>枚<small>膝の上の札</small></div></div>
+  </div>
   <div class="lid top"></div><div class="lid bot"></div>
 </div>
 
@@ -431,16 +440,26 @@ function setBarberSide(left){ $("barber").setAttribute("transform", left ? "tran
 
 /* ---------- 札の勘定 ---------- */
 let billTimer = 0, billCount = 0;
-function startBills(){
-  billCount = 0; $("counter").classList.remove("hidden");
-  const draw = () => $("counter").innerHTML = `<div>${billCount}枚<small>女が数えた札</small></div><div class="fix">100枚<small>膝の上の札</small></div>`;
-  draw();
-  billTimer = setInterval(() => {
-    billCount++; draw();
-    $("bill").setAttribute("transform", `rotate(${billCount%2 ? -30 : -8} 408 268)`);
-  }, 50);
+(function buildStack(){
+  for (let k=0; k<12; k++) el("rect", {x:8, y:52 - k*3.2, width:58, height:14, rx:1.5, fill: k%2 ? "#e9dcc0" : "#f3e8d0", stroke:"#a8916c", "stroke-width":.6}, $("stack"));
+})();
+// 束のいちばん上から一枚、横へめくる
+function flick(){
+  const b = el("rect", {x:8, y:52 - 11*3.2, width:58, height:14, rx:1.5, fill:"#f3e8d0", stroke:"#a8916c", "stroke-width":.6}, $("fly"));
+  animate(320, p => { b.setAttribute("transform", `translate(${p*40} ${-p*6}) rotate(${p*18} 37 20)`); b.setAttribute("opacity", 1 - p*.9); }).then(() => b.remove());
+  billCount++; $("cnt").textContent = billCount;
+  $("bill").setAttribute("transform", `rotate(${billCount%2 ? -30 : -8} 408 268)`);
 }
-function stopBills(){ clearInterval(billTimer); $("counter").classList.add("hidden"); }
+function showLap(n){
+  const l = $("lapBox"); $("lap").textContent = n;
+  l.classList.toggle("drop", n !== 100);
+  if (n === 100){ l.classList.remove("back"); void l.offsetWidth; l.classList.add("back"); }
+}
+// いっしょに一枚数える。一瞬九十九枚になるが、すぐ百枚にもどる
+async function countOne(){ flick(); showLap(99); await sleep(650); showLap(100); await sleep(500); }
+function startBills(){ billCount = 0; $("cnt").textContent = 0; showLap(100); $("billbox").classList.remove("hidden"); }
+function fastBills(){ billTimer = setInterval(flick, 45); }
+function stopBills(){ clearInterval(billTimer); $("billbox").classList.add("hidden"); }
 
 /* ---------- 物語 ---------- */
 async function play(){
@@ -515,8 +534,19 @@ async function play(){
   await buttons([["のぞきこむ", true, true]]);
   await Promise.all([tween("x", -100, 1600), fade("woman", 1, 1600)]);
   await say(Q(`すると${CHOUBA}のうちに、いつの間にか一人の女が座っている。`)); await next();
-  await say(N("女は膝の上の札を数えている。その数え方が、いかにも早い。"));
-  startBills(); await sleep(2500); await next();
+  await say(N("女は、膝の上の札を数えている。百枚ぐらいの束だ。<br>いっしょに数えてみよう。"));
+  startBills();
+  const COUNT_LINES = ["一枚。膝の上は、九十九枚になるはず……", "二枚。……膝の上は、百枚のまま。", "三枚。……やっぱり、百枚。"];
+  for (let i=0; i<3; i++){
+    await buttons([["一枚数える", true, true]]);
+    await countOne();
+    await say(N(COUNT_LINES[i]));
+  }
+  await next();
+  await say(N("女の数え方は、いかにも早い。"));
+  fastBills(); await sleep(2500); await next();
+  while (billCount < 130) await sleep(100);
+  await say(N("数えた札は、もう百枚をこえた。それでも、膝の上は百枚のまま。")); await next();
   await say(Q(`その百枚がいつまで${KANJO}しても百枚である。`)); await next();
   await say(Q("すると耳の元で白い男が大きな声で「洗いましょう」と言った。")); await next();
   await say(N("椅子から立ち上がって――"));
