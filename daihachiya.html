@@ -73,6 +73,9 @@ svg#scene{width:100%;height:100%;max-height:72vh;display:block;overflow:hidden}
 .end .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
 .end .row button{flex:1;min-width:180px;font:inherit;font-size:16px;font-weight:700;padding:13px;border-radius:12px;border:1px solid var(--line);background:rgba(255,240,215,.07);color:var(--ink);cursor:pointer}
 .end .row button.main{background:var(--btn);border-color:#9a7350;color:#fff}
+.end .opt{display:flex;align-items:center;gap:10px;padding:10px 12px;margin:0 0 8px;border:1px solid var(--line);border-radius:10px;cursor:pointer;line-height:1.5}
+.end .opt input[type=radio]{width:20px;height:20px;flex:none;accent-color:#c49a6c}
+.end .opt input[type=text]{flex:1;min-width:0;font:inherit;font-size:16px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:#17110c;color:var(--ink)}
 .end .note{font-size:14px;color:var(--sub);line-height:1.7}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#fff;color:#111;padding:10px 18px;border-radius:999px;font-size:15px;opacity:0;transition:.3s;pointer-events:none;z-index:50}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -222,13 +225,13 @@ svg#scene{width:100%;height:100%;max-height:72vh;display:block;overflow:hidden}
   <div class="in">
     <h2>「金魚売はちっとも動かなかった。」</h2>
     <p class="log">床屋の中で、男はずっと鏡を見ていました。表へ出て、最後に見たのは、桶の中をじっと見つめる金魚売でした。</p>
+    <!-- 問いはプリントの「本時の問い」と同じ言葉にする -->
     <div class="qbox">
-      <p>Q1．最後に見た桶の中のようすは、このゲームのどこかの場面と似ていなかったかな。似ていると思ったら、どこが似ているか書こう。</p>
-      <textarea id="a1" rows="3" placeholder="今の予想でかまいません"></textarea>
-    </div>
-    <div class="qbox">
-      <p>Q2．なぜこの夢は、金魚売で終わるのだろう。</p>
-      <textarea id="a2" rows="3" placeholder="今の予想でかまいません"></textarea>
+      <p>問い　金魚売を眺める「自分」は、何を感じていたのだろう。近いものを選び、理由を書こう。</p>
+      <label class="opt"><input type="radio" name="feel" value="A">Ａ　変わっていく世の中に取り残される不安</label>
+      <label class="opt"><input type="radio" name="feel" value="B">Ｂ　動かない古いものへのなつかしさ</label>
+      <label class="opt"><input type="radio" name="feel" value="C">Ｃ　その他<input type="text" id="other" placeholder="自分の言葉で"></label>
+      <textarea id="a1" rows="3" placeholder="理由（ゲームで見たこと・感じたことから。今の予想でかまいません）"></textarea>
     </div>
     <p class="note">このあと本文を読みます。窓の外を通った人の名前、帳場の女の姿や札、金魚の種類、金魚売のようすなど、ゲームに出てこなかったところにも注意して読みましょう。</p>
     <div class="row">
@@ -241,8 +244,8 @@ svg#scene{width:100%;height:100%;max-height:72vh;display:block;overflow:hidden}
 
 <script>
 const $ = id => document.getElementById(id);
-const KEY = "yume_daihachiya_v2";
-let S = {a1:"", a2:"", saw:""};
+const KEY = "yume_daihachiya_v3";
+let S = {feel:"", other:"", a1:"", saw:""};
 try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s) S = Object.assign(S, s); }catch(e){}
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -579,14 +582,20 @@ async function play(){
 
 function showEnd(){
   walkSpeed = 0;
-  $("a1").value = S.a1; $("a2").value = S.a2;
+  $("a1").value = S.a1; $("other").value = S.other;
+  document.querySelectorAll('input[name=feel]').forEach(r => r.checked = r.value === S.feel);
   $("end").classList.remove("hidden");
 }
-["a1","a2"].forEach(id => $(id).addEventListener("input", e => { S[id] = e.target.value; save(); }));
+["a1","other"].forEach(id => $(id).addEventListener("input", e => { S[id] = e.target.value; save(); }));
+$("other").addEventListener("focus", () => { S.feel = "C"; document.querySelector('input[value=C]').checked = true; save(); });
+document.querySelectorAll('input[name=feel]').forEach(r => r.addEventListener("change", () => { S.feel = r.value; save(); }));
+const FEEL = {A:"Ａ　変わっていく世の中に取り残される不安", B:"Ｂ　動かない古いものへのなつかしさ"};
 function outText(){
+  const feel = S.feel === "C" ? `Ｃ　その他（${S.other.trim()}）` : (FEEL[S.feel] || "（未選択）");
   return ["【夢十夜「第八夜」　読む前の予想】",
-    `Q1 最後の桶の中は、どの場面と似ていたか：${S.a1.trim() || "（未記入）"}`,
-    `Q2 なぜこの夢は金魚売で終わるのか：${S.a2.trim() || "（未記入）"}`].join("\n");
+    "問い　金魚売を眺める「自分」は、何を感じていたのだろう。",
+    `選んだもの：${feel}`,
+    `理由：${S.a1.trim() || "（未記入）"}`].join("\n");
 }
 $("copyBtn").addEventListener("click", () => {
   const text = outText();
