@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>第六夜　仁王を掘り出す</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#1b1712; --ink:#f3ece0; --sub:#bcae98; --line:rgba(255,240,215,.16);
+  --btn:#a5452f; --card:#29221a;
+  --mincho:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --gothic:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--gothic);-webkit-text-size-adjust:100%;overflow-x:hidden}
+body{--panelH:230px}
+@media(max-width:560px){body{--panelH:250px}.text{font-size:19px}}
+rt{font-size:.5em;color:var(--sub)}
+
+/* 文字欄の高さを固定し、文が変わっても絵が動かないようにする */
+.stage{position:fixed;top:0;left:0;right:0;bottom:calc(var(--panelH) + env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(80% 70% at 50% 45%,#3a2e22,#16120d)}
+svg#scene{width:100%;height:100%;max-height:72vh;display:block;overflow:hidden}
+.scn{transition:opacity 1s}
+.grain{position:absolute;inset:0;pointer-events:none;z-index:1;opacity:.22;mix-blend-mode:multiply;background-size:220px 220px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .25  0 0 0 0 .18  0 0 0 0 .1  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.sfx{position:absolute;z-index:2;font-family:var(--mincho);font-weight:800;font-size:24px;color:#fff6e6;text-shadow:0 2px 10px rgba(0,0,0,.9);pointer-events:none;opacity:0;animation:sfx 1.2s ease-out forwards;white-space:nowrap}
+@keyframes sfx{0%{opacity:0;transform:translateY(8px)}20%{opacity:1}75%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
+.count{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:2;padding:8px 18px;border-radius:999px;background:rgba(24,18,12,.88);border:1px solid var(--line);font-family:var(--mincho);font-weight:800;font-size:20px;white-space:nowrap;pointer-events:none}
+
+.panel{position:fixed;left:0;right:0;bottom:0;height:calc(var(--panelH) + env(safe-area-inset-bottom));overflow-y:auto;background:#15110c;border-top:1px solid var(--line);z-index:4;padding:14px 16px calc(18px + env(safe-area-inset-bottom))}
+.panel .in{max-width:760px;margin:0 auto}
+.text{font-family:var(--mincho);font-size:21px;line-height:1.9;min-height:4.2em;letter-spacing:.03em;opacity:0;transform:translateY(6px);transition:opacity .5s,transform .5s}
+.text.show{opacity:1;transform:none}
+.text .q{color:#fff8ea}
+.text .nar{color:var(--sub);font-family:var(--gothic);font-size:17px}
+.btns{display:flex;gap:10px;margin-top:12px;min-height:54px}
+.btns button{flex:1;font:inherit;font-size:17px;font-weight:700;padding:15px 10px;border-radius:14px;border:1px solid var(--line);background:rgba(255,240,215,.07);color:var(--ink);cursor:pointer}
+.btns button.main{background:var(--btn);border-color:#c2644c;color:#fff}
+
+.title{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:radial-gradient(70% 60% at 50% 40%,#4a2f22,var(--bg));padding:24px 16px;text-align:center}
+.title h1{font-family:var(--mincho);font-size:46px;margin:0;letter-spacing:.2em}
+.title p{margin:0;color:var(--sub);font-size:16px;line-height:1.8}
+.title button{font:inherit;font-size:18px;font-weight:700;padding:14px 40px;border-radius:999px;border:1px solid #c2644c;background:var(--btn);color:#fff;cursor:pointer}
+.hidden{display:none!important}
+
+.end{position:fixed;inset:0;z-index:30;overflow:auto;background:rgba(22,17,12,.96);padding:28px 16px 40px}
+.end .in{max-width:680px;margin:0 auto}
+.end h2{font-family:var(--mincho);font-size:22px;margin:0 0 8px;line-height:1.6}
+.end .log{color:var(--sub);font-size:15px;margin:0 0 18px;line-height:1.8}
+.end .qbox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:0 0 14px}
+.end .qbox p{margin:0 0 8px;font-weight:700;line-height:1.7}
+.end .opt{display:flex;align-items:center;gap:10px;padding:10px 12px;margin:0 0 8px;border:1px solid var(--line);border-radius:10px;cursor:pointer;line-height:1.5}
+.end .opt input[type=radio]{width:20px;height:20px;flex:none;accent-color:#c2644c}
+.end .opt input[type=text]{flex:1;min-width:0;font:inherit;font-size:16px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:#17110c;color:var(--ink)}
+.end textarea{width:100%;font:inherit;font-size:16px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#17110c;color:var(--ink);resize:vertical}
+.end .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.end .row button{flex:1;min-width:180px;font:inherit;font-size:16px;font-weight:700;padding:13px;border-radius:12px;border:1px solid var(--line);background:rgba(255,240,215,.07);color:var(--ink);cursor:pointer}
+.end .row button.main{background:var(--btn);border-color:#c2644c;color:#fff}
+.end .note{font-size:14px;color:var(--sub);line-height:1.7}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#fff;color:#111;padding:10px 18px;border-radius:999px;font-size:15px;opacity:0;transition:.3s;pointer-events:none;z-index:50}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="title" id="title">
+  <h1>第六夜</h1>
+  <p>これは、ある男が見た夢の話です。<br>男といっしょに、運慶が仁王を彫るのを見に行きましょう。</p>
+  <button id="startBtn">はじめる</button>
+</div>
+
+<div class="stage" id="stage">
+  <svg id="scene" viewBox="0 0 400 440" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+    <defs>
+      <clipPath id="box"><rect x="0" y="0" width="400" height="440" rx="14"/></clipPath>
+      <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fb0d6"/><stop offset="1" stop-color="#e3eef0"/></linearGradient>
+      <linearGradient id="wood" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d6ac74"/><stop offset="1" stop-color="#b48553"/></linearGradient>
+      <linearGradient id="inner" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0d7aa"/><stop offset="1" stop-color="#ddb985"/></linearGradient>
+      <linearGradient id="bark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6d4c33"/><stop offset="1" stop-color="#4a3222"/></linearGradient>
+      <!-- 削った所だけ、下の層が見える -->
+      <mask id="mFace" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="440"><rect width="400" height="440" fill="#fff"/><g id="holesFace"></g></mask>
+      <mask id="mLog" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="440"><rect width="400" height="440" fill="#fff"/><g id="holesLog"></g></mask>
+    </defs>
+
+    <!-- 護国寺の山門 -->
+    <g id="gateScene" class="scn" clip-path="url(#box)">
+      <rect width="400" height="440" fill="url(#sky)"/>
+      <rect y="330" width="400" height="110" fill="#d3c09a"/>
+      <!-- 門 -->
+      <rect x="150" y="300" width="230" height="40" fill="#8f7d62"/>
+      <rect x="168" y="150" width="194" height="185" fill="#3a2a20"/>
+      <rect x="160" y="150" width="16" height="190" fill="#b5402b"/>
+      <rect x="354" y="150" width="16" height="190" fill="#b5402b"/>
+      <rect x="150" y="138" width="230" height="16" fill="#b5402b"/>
+      <rect x="150" y="128" width="230" height="10" fill="#8c2f20"/>
+      <path d="M118 128 C 170 118 220 112 265 110 C 310 112 360 118 412 128 L 396 100 C 350 92 300 84 265 82 C 230 84 180 92 134 100 Z" fill="#3f3b39"/>
+      <path d="M134 100 C 180 92 230 84 265 82 C 300 84 350 92 396 100" fill="none" stroke="#5a5552" stroke-width="3"/>
+      <rect x="236" y="70" width="58" height="14" rx="3" fill="#2f2b29"/>
+      <!-- 彫りかけの仁王と足場 -->
+      <g id="statue">
+        <rect x="215" y="176" width="100" height="160" fill="url(#wood)"/>
+        <path d="M232 214 C 238 196 292 196 298 214 L 306 336 L 224 336 Z" fill="#c8995f" opacity=".7"/>
+        <ellipse cx="265" cy="198" rx="17" ry="20" fill="#c8995f"/>
+        <path d="M255 194 l8 2 M267 196 l8 -2" stroke="#7a4f28" stroke-width="2" id="miniBrow" opacity="0"/>
+        <path d="M262 202 l3 8 l3 -8" fill="none" stroke="#7a4f28" stroke-width="1.6" id="miniNose" opacity="0"/>
+      </g>
+      <g stroke="#9c7748" stroke-width="5" stroke-linecap="round">
+        <line x1="208" y1="160" x2="208" y2="336"/><line x1="322" y1="160" x2="322" y2="336"/>
+        <line x1="204" y1="244" x2="326" y2="244" stroke-width="7"/>
+      </g>
+      <!-- 運慶（烏帽子のようなもの、古くさい着物） -->
+      <g id="unkei" transform="translate(236 244)">
+        <path d="M-15 0 L -12 -42 C -10 -54 10 -54 12 -42 L 15 0 Z" fill="#a0742f"/>
+        <path d="M-12 -40 L 0 -26 L 12 -40" fill="none" stroke="#5a3d16" stroke-width="2"/>
+        <circle cx="0" cy="-60" r="8" fill="#d2a57c"/>
+        <path d="M-6 -66 L -4 -84 C -1 -88 4 -88 6 -84 L 7 -66 Z" fill="#1d1a19"/>
+        <g id="arm"><line x1="8" y1="-40" x2="24" y2="-50" stroke="#a0742f" stroke-width="6" stroke-linecap="round"/><rect x="22" y="-60" width="12" height="7" rx="2" fill="#6a4a2a"/><line x1="28" y1="-53" x2="28" y2="-44" stroke="#5a3d16" stroke-width="2"/></g>
+      </g>
+      <g id="chipsGate"></g>
+      <!-- 赤松 -->
+      <path d="M40 440 C 60 360 70 300 110 230 C 140 180 170 140 230 70" fill="none" stroke="#8e4a30" stroke-width="22" stroke-linecap="round"/>
+      <path d="M40 440 C 60 360 70 300 110 230 C 140 180 170 140 230 70" fill="none" stroke="#b1603d" stroke-width="7" stroke-dasharray="10 14" stroke-linecap="round"/>
+      <g fill="#2f5d36">
+        <ellipse cx="236" cy="62" rx="58" ry="18"/><ellipse cx="180" cy="104" rx="46" ry="15"/><ellipse cx="120" cy="190" rx="50" ry="16"/><ellipse cx="290" cy="40" rx="40" ry="13"/>
+      </g>
+      <g fill="#3f7344" opacity=".9">
+        <ellipse cx="226" cy="56" rx="40" ry="10"/><ellipse cx="172" cy="99" rx="30" ry="9"/><ellipse cx="112" cy="184" rx="32" ry="9"/>
+      </g>
+      <!-- 見物人（明治の人） -->
+      <g id="crowd"></g>
+      <g id="bubbles"></g>
+    </g>
+
+    <!-- 運慶の手もと（大きく） -->
+    <g id="carveScene" class="scn" opacity="0" clip-path="url(#box)">
+      <rect width="400" height="440" fill="#3a2a20"/>
+      <rect x="0" y="0" width="22" height="440" fill="#b5402b"/><rect x="378" y="0" width="22" height="440" fill="#b5402b"/>
+      <!-- 下の層：木の中に埋まっている仁王の顔 -->
+      <g>
+        <rect x="70" y="30" width="260" height="400" fill="url(#inner)"/>
+        <g id="niouFace" fill="none" stroke="#7a4a22" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M126 170 C 150 140 180 142 192 160" stroke-width="12"/>
+          <path d="M274 170 C 250 140 220 142 208 160" stroke-width="12"/>
+          <circle cx="160" cy="190" r="17" fill="#f4e2c0" stroke-width="5"/><circle cx="240" cy="190" r="17" fill="#f4e2c0" stroke-width="5"/>
+          <circle cx="163" cy="192" r="6" fill="#4a2a12" stroke="none"/><circle cx="237" cy="192" r="6" fill="#4a2a12" stroke="none"/>
+          <path d="M190 178 C 196 210 186 232 176 244 C 186 258 214 258 224 244 C 214 232 204 210 210 178" stroke-width="5"/>
+          <path d="M172 244 C 164 236 168 226 178 230 M228 244 C 236 236 232 226 222 230" stroke-width="5"/>
+          <path d="M150 284 C 170 268 230 268 250 284 C 236 312 164 312 150 284 Z" fill="#8c3a26" stroke-width="5"/>
+          <path d="M164 284 l10 8 l10 -8 l10 8 l10 -8 l10 8 l10 -8 l10 8" stroke="#f4e2c0" stroke-width="3"/>
+          <path d="M120 230 C 126 262 134 280 146 300 M280 230 C 274 262 266 280 254 300" stroke-width="4"/>
+          <path d="M140 120 C 170 104 230 104 260 120" stroke-width="4"/>
+        </g>
+      </g>
+      <!-- 上の層：まだ削っていない木の塊 -->
+      <g mask="url(#mFace)" id="faceCover">
+        <rect x="70" y="30" width="260" height="400" fill="url(#wood)"/>
+        <g stroke="#a67845" stroke-width="2" opacity=".6"><line x1="90" y1="30" x2="96" y2="430"/><line x1="150" y1="30" x2="146" y2="430"/><line x1="210" y1="30" x2="214" y2="430"/><line x1="270" y1="30" x2="266" y2="430"/><line x1="315" y1="30" x2="318" y2="430"/></g>
+      </g>
+      <g id="toolFace"></g>
+      <g id="chipsFace"></g>
+    </g>
+
+    <!-- 家の裏：倒れた木を薪にしたもの -->
+    <g id="yardScene" class="scn" opacity="0" clip-path="url(#box)">
+      <rect width="400" height="440" fill="#c9d6cf"/>
+      <rect y="0" width="400" height="190" fill="#8b7a63"/>
+      <g stroke="#6f604c" stroke-width="3"><line x1="0" y1="60" x2="400" y2="60"/><line x1="0" y1="120" x2="400" y2="120"/></g>
+      <g stroke="#7a6a55" stroke-width="2">
+        <line x1="40" y1="0" x2="40" y2="190"/><line x1="120" y1="0" x2="120" y2="190"/><line x1="200" y1="0" x2="200" y2="190"/><line x1="280" y1="0" x2="280" y2="190"/><line x1="360" y1="0" x2="360" y2="190"/>
+      </g>
+      <rect y="190" width="400" height="250" fill="#a89270"/>
+      <g id="pile"></g>
+      <!-- いま彫っている薪 -->
+      <g id="logGroup">
+        <g>
+          <rect x="50" y="210" width="300" height="140" rx="12" fill="url(#inner)"/>
+          <g id="grain" fill="none" stroke="#c29a66" stroke-width="2"></g>
+        </g>
+        <g mask="url(#mLog)">
+          <rect x="50" y="210" width="300" height="140" rx="12" fill="url(#bark)"/>
+          <g stroke="#3a281b" stroke-width="2" opacity=".7"><path d="M60 230 L 340 236 M60 262 L 340 258 M60 296 L 340 300 M60 328 L 340 324"/></g>
+        </g>
+        <ellipse cx="350" cy="280" rx="18" ry="70" fill="#d9b885" stroke="#6d4c33" stroke-width="4"/>
+        <g fill="none" stroke="#b08a58" stroke-width="1.5"><ellipse cx="350" cy="280" rx="12" ry="48"/><ellipse cx="350" cy="280" rx="6" ry="24"/></g>
+      </g>
+      <g id="toolLog"></g>
+      <g id="chipsLog"></g>
+    </g>
+  </svg>
+  <div class="grain"></div>
+  <div class="count hidden" id="count"></div>
+</div>
+
+<div class="panel">
+  <div class="in">
+    <div class="text" id="text"></div>
+    <div class="btns" id="btns"></div>
+  </div>
+</div>
+
+<div class="end hidden" id="end">
+  <div class="in">
+    <h2>「ついに明治の木にはとうてい仁王は埋まっていないものだと悟った。」</h2>
+    <p class="log" id="log"></p>
+    <!-- 問いはプリントの問いと同じ言葉にする -->
+    <div class="qbox">
+      <p>問い　運慶は、どんな人だと思う？　近いものを選び、ゲームで見たこと・感じたことから理由を書こう。</p>
+      <label class="opt"><input type="radio" name="feel" value="A">Ａ　周りの声を気にせず、自分の仕事に打ちこむ人</label>
+      <label class="opt"><input type="radio" name="feel" value="B">Ｂ　古い時代のままで、今の世の中とは関係のない人</label>
+      <label class="opt"><input type="radio" name="feel" value="C">Ｃ　その他<input type="text" id="other" placeholder="自分の言葉で"></label>
+      <textarea id="a1" rows="3" placeholder="理由（ゲームで見たこと・感じたことから。今の予想でかまいません）"></textarea>
+    </div>
+    <p class="note">このあと教科書で本文を読みます。見物人がどんな人たちだったか、運慶の姿、「自分」が彫った木など、ゲームに出てこなかったところにも注意して読みましょう。</p>
+    <div class="row">
+      <button class="main" id="copyBtn">予想をコピーする（ロイロ用）</button>
+      <button id="againBtn">もう一度はじめから</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const KEY = "yume_rokuya_v1";
+let S = {feel:"", other:"", a1:"", spoke:false, logs:0};
+try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s) S = Object.assign(S, s); }catch(e){}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+// Q は本文の引用（表記は教科書と同じ）、N はゲームの語り
+const Q = s => `<span class="q">${s}</span>`, N = s => `<span class="nar">${s}</span>`;
+const R = (k, r) => `<ruby>${k}<rt>${r}</rt></ruby>`;
+const NOMI = R("鑿","のみ"), TSUCHI = R("槌","つち");
+
+/* ---------- 文字と操作 ---------- */
+async function say(html){
+  const t = $("text"); t.classList.remove("show"); await sleep(250);
+  t.innerHTML = html; t.classList.add("show");
+}
+function buttons(list){
+  return new Promise(res => {
+    const b = $("btns"); b.innerHTML = "";
+    list.forEach(([label, val, main]) => {
+      const e = document.createElement("button"); e.textContent = label; if (main) e.className = "main";
+      e.addEventListener("click", () => { b.innerHTML = ""; res(val); }, {once:true});
+      b.appendChild(e);
+    });
+  });
+}
+const next = (label="次へ") => buttons([[label, true, true]]);
+function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(toast.h); toast.h=setTimeout(()=>t.classList.remove("show"),1800); }
+function sfx(text, left, top){
+  const d = document.createElement("div"); d.className = "sfx"; d.textContent = text;
+  d.style.left = left; d.style.top = top; $("stage").appendChild(d);
+  setTimeout(() => d.remove(), 1300);
+}
+function animate(ms, fn){
+  return new Promise(res => {
+    const t0 = performance.now();
+    (function f(now){ const p = Math.min(1, Math.max(0, (now-t0)/ms)); fn(p); p<1 ? requestAnimationFrame(f) : res(); })(t0);
+  });
+}
+const ease = p => 1 - Math.pow(1-p, 3);
+const SCENES = ["gateScene","carveScene","yardScene"];
+function scene(name){ SCENES.forEach(id => $(id).setAttribute("opacity", id===name ? 1 : 0)); }
+
+/* ---------- 絵の部品 ---------- */
+const SVGNS = "http://www.w3.org/2000/svg";
+const el = (tag, attrs, parent) => { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+const SKIN = "#cfa37a", HAIR = "#231b15";
+// 見物人：後ろ姿。hat は 笠・帽子・なし
+const CROWD = [
+  {x:30,  y:400, col:"#3c4e66", hat:"kasa"},
+  {x:92,  y:412, col:"#6b4a32", hat:"none"},
+  {x:150, y:396, col:"#3c4e66", hat:"kasa"},
+  {x:212, y:414, col:"#5c5c58", hat:"cap"},
+  {x:270, y:400, col:"#3c4e66", hat:"kasa"},
+  {x:340, y:410, col:"#7a6a4e", hat:"cap", young:true}
+];
+(function buildCrowd(){
+  CROWD.forEach(p => {
+    const g = el("g", {transform:`translate(${p.x} ${p.y})`}, $("crowd"));
+    el("path", {d:"M-30 60 C -30 10 -20 0 0 0 C 20 0 30 10 30 60 Z", fill:p.col}, g);
+    if (p.col === "#3c4e66") el("path", {d:"M-8 18 a8 8 0 1 0 16 0 a8 8 0 1 0 -16 0", fill:"none", stroke:"#e7e0d0", "stroke-width":2}, g);
+    el("rect", {x:-6, y:-10, width:12, height:12, fill:SKIN}, g);
+    el("ellipse", {cx:0, cy:-22, rx:14, ry:16, fill:HAIR}, g);
+    el("ellipse", {cx:-13, cy:-20, rx:3, ry:5, fill:SKIN}, g); el("ellipse", {cx:13, cy:-20, rx:3, ry:5, fill:SKIN}, g);
+    if (p.hat === "kasa") el("path", {d:"M-26 -26 L 0 -46 L 26 -26 Z", fill:"#d9c69a", stroke:"#a8935f", "stroke-width":1.5}, g);
+    if (p.hat === "cap") { el("path", {d:"M-14 -26 C -14 -42 14 -42 14 -26 Z", fill:"#26221f"}, g); el("rect", {x:-15, y:-28, width:30, height:4, fill:"#3a3532"}, g); }
+    p.g = g;
+  });
+})();
+// 吹き出し（SVG の中に描く）
+function bubble(x, y, text, w = 150){
+  const g = el("g", {opacity:0}, $("bubbles"));
+  const bx = Math.min(Math.max(x, w/2 + 6), 394 - w/2);   // 吹き出しは画面からはみ出さない
+  const lines = []; const per = Math.floor((w - 16) / 13);
+  for (let i=0; i<text.length; i+=per) lines.push(text.slice(i, i+per));
+  const h = lines.length*17 + 14;
+  el("rect", {x:bx - w/2, y:y - h, width:w, height:h, rx:10, fill:"#fffaf0", stroke:"#5a4a38", "stroke-width":1.5}, g);
+  el("path", {d:`M${x-6} ${y-1} L ${x} ${y+10} L ${x+6} ${y-1} Z`, fill:"#fffaf0", stroke:"#5a4a38", "stroke-width":1.5}, g);
+  el("rect", {x:x-7, y:y-3, width:14, height:3, fill:"#fffaf0"}, g);
+  lines.forEach((l, i) => { const t = el("text", {x:bx - w/2 + 8, y:y - h + 20 + i*17, "font-size":13, fill:"#2b2218", "font-family":"Zen Kaku Gothic New, sans-serif"}, g); t.textContent = l; });
+  animate(300, p => g.setAttribute("opacity", p));
+  return g;
+}
+function clearBubbles(){ $("bubbles").innerHTML = ""; }
+
+/* ---------- 鑿と槌：運慶の腕と、木くず ---------- */
+let swinging = false;
+async function swing(){
+  const arm = $("arm");
+  await animate(140, p => arm.setAttribute("transform", `rotate(${-30*p} 8 -40)`));
+  await animate(120, p => arm.setAttribute("transform", `rotate(${-30 + 30*p} 8 -40)`));
+  chips($("chipsGate"), 262, 200, 4, 2);
+}
+async function keepCarving(){
+  swinging = true;
+  while (swinging){ await swing(); await sleep(420); }
+}
+function chips(parent, x, y, n = 6, s = 4){
+  for (let i=0; i<n; i++){
+    const a = -Math.PI*(.1 + Math.random()*.8) - (Math.random()<.5 ? 0 : Math.PI*.0), v = 40 + Math.random()*70;
+    const c = el("path", {d:`M0 0 l${s*2} ${-s*.6} l${s*.6} ${s*1.4} Z`, fill: Math.random()<.5 ? "#e9cd9c" : "#c99a62"}, parent);
+    const dx = Math.cos(a)*v*(Math.random()<.5?-1:1), dy = Math.sin(a)*v, rot = Math.random()*360;
+    animate(700 + Math.random()*300, p => {
+      c.setAttribute("transform", `translate(${x + dx*p} ${y + dy*p + 160*p*p}) rotate(${rot + 300*p})`);
+      c.setAttribute("opacity", 1 - p*p);
+    }).then(() => c.remove());
+  }
+}
+
+/* ---------- 削る：上の層に穴をあけていく ---------- */
+function holesFor(x0, y0, x1, y1, step){
+  const h = [];
+  for (let y=y0; y<=y1; y+=step) for (let x=x0; x<=x1; x+=step) h.push({x: x + (Math.random()-.5)*step*.6, y: y + (Math.random()-.5)*step*.6});
+  return h;
+}
+function cut(holeLayer, list){
+  list.forEach(h => {
+    const e = el("ellipse", {cx:h.x, cy:h.y, rx:0, ry:0, fill:"#000", transform:`rotate(${Math.random()*180} ${h.x} ${h.y})`}, holeLayer);
+    const rx = 18 + Math.random()*8, ry = 12 + Math.random()*6;
+    animate(180, p => { e.setAttribute("rx", rx*p); e.setAttribute("ry", ry*p); });
+  });
+}
+function chisel(layer, x, y){
+  const g = el("g", {transform:`translate(${x} ${y})`}, layer);
+  el("rect", {x:-3, y:-70, width:6, height:44, rx:2, fill:"#7a5230"}, g);
+  el("path", {d:"M-4 -26 L 4 -26 L 3 0 L -3 0 Z", fill:"#b9bec4"}, g);
+  animate(260, p => g.setAttribute("transform", `translate(${x} ${y - 14*Math.sin(Math.PI*p)})`)).then(() => g.remove());
+}
+// 顔の部分を、眉→鼻→残りの順に
+let FACE = [];
+function resetFace(){
+  $("holesFace").innerHTML = "";
+  const all = holesFor(90, 50, 310, 410, 22);
+  const d = (h, cx, cy) => Math.hypot(h.x - cx, (h.y - cy)*1.6);
+  FACE = {
+    brow: all.filter(h => h.y > 125 && h.y < 215),
+    nose: all.filter(h => h.y >= 215 && h.y < 260 && Math.abs(h.x - 200) < 70),
+    rest: all.filter(h => !(h.y > 125 && h.y < 215) && !(h.y >= 215 && h.y < 260 && Math.abs(h.x - 200) < 70))
+  };
+  FACE.brow.sort((a,b) => a.x - b.x);
+  FACE.nose.sort((a,b) => d(a,200,200) - d(b,200,200));
+  FACE.rest.sort((a,b) => d(a,200,240) - d(b,200,240));
+}
+async function unkeiStroke(list, n){
+  const part = list.splice(0, n);
+  if (!part.length) return;
+  const c = part[Math.floor(part.length/2)];
+  chisel($("toolFace"), c.x, c.y); sfx("カン", "62%", "26%");
+  await sleep(130);
+  cut($("holesFace"), part); chips($("chipsFace"), c.x, c.y, 8, 5);
+  await sleep(260);
+}
+
+// 薪：彫っても彫っても木目と節だけ
+let LOG = [];
+function resetLog(seed){
+  $("holesLog").innerHTML = ""; $("grain").innerHTML = "";
+  for (let i=0; i<7; i++){
+    const y = 222 + i*18 + (seed*5 % 9);
+    el("path", {d:`M58 ${y} C 140 ${y - 6 + (i%3)*4} 230 ${y + 8} 340 ${y - 2}`}, $("grain"));
+  }
+  const kx = 120 + (seed*83 % 160), ky = 250 + (seed*37 % 60);
+  el("ellipse", {cx:kx, cy:ky, rx:12, ry:7, fill:"#a57a48", stroke:"#8a6236"}, $("grain"));
+  el("ellipse", {cx:kx, cy:ky, rx:22, ry:13}, $("grain"));
+  LOG = holesFor(66, 222, 334, 338, 20).sort(() => Math.random() - .5);
+}
+async function playerStroke(){
+  const part = LOG.splice(0, Math.ceil(LOG.length / 3) || 1);
+  const c = part[0] || {x:200, y:280};
+  chisel($("toolLog"), c.x, c.y); sfx("コツ", "45%", "40%");
+  await sleep(130);
+  cut($("holesLog"), part); chips($("chipsLog"), c.x, c.y, 10, 5);
+  await sleep(300);
+}
+function drawPile(n){
+  $("pile").innerHTML = "";
+  for (let i=0; i<n; i++){
+    const x = 30 + (i%8)*48, y = 400 - Math.floor(i/8)*30;
+    const g = el("g", {transform:`translate(${x} ${y}) rotate(${(i*37)%20 - 10})`}, $("pile"));
+    el("rect", {x:-22, y:-10, width:44, height:20, rx:6, fill:"#d9b885", stroke:"#6d4c33", "stroke-width":2}, g);
+    el("path", {d:"M-14 -4 l8 6 M2 -6 l10 8", stroke:"#8a6236", "stroke-width":2}, g);
+  }
+}
+
+/* ---------- 物語 ---------- */
+async function play(){
+  S.spoke = false; S.logs = 0; save();
+  $("end").classList.add("hidden"); $("count").classList.add("hidden");
+  scene("gateScene"); clearBubbles(); swinging = false;
+  $("miniBrow").setAttribute("opacity", 0); $("miniNose").setAttribute("opacity", 0);
+  resetFace(); resetLog(1); drawPile(0); $("faceCover").setAttribute("opacity", 1);
+
+  await say(Q(`運慶が護国寺の山門で仁王を刻んでいるという評判だから、散歩ながら行ってみると、自分より先にもう大勢集まって、しきりに下馬評をやっていた。`)); await next();
+  keepCarving();
+  await say(N("赤松と、朱塗りの門。門の下で、だれかが高い所に乗って、仁王を彫っている。")); await next();
+  await say(Q("ところが見ている者は、みんな自分と同じく、明治の人間である。")); await next();
+
+  // 見物人の評判
+  await say(N("見物人たちが、口々に何か言っている。"));
+  const VOICES = [
+    [CROWD[0], "大きなもんだなあ。"],
+    [CROWD[2], "人間をこしらえるよりもよっぽど骨が折れるだろう。"],
+    [CROWD[4], "へえ仁王だね。今でも仁王を彫るのかね。へえそうかね。わっしゃまた仁王はみんな古いのばかりかと思ってた。"],
+  ];
+  for (const [p, v] of VOICES){
+    await buttons([["耳をすます", true, true]]);
+    clearBubbles(); bubble(Math.min(Math.max(p.x, 85), 315), p.y - 56, v, v.length > 30 ? 220 : 160);
+    await say(Q(`「${v}」`));
+  }
+  await next(); clearBubbles();
+
+  // 運慶に声をかけても、振り向かない
+  await say(N("運慶は、この声が聞こえているのだろうか。"));
+  const spoke = await buttons([["運慶に声をかける", "yes", true], ["だまって見ている", "no", false]]);
+  S.spoke = spoke === "yes"; save();
+  if (S.spoke){
+    bubble(200, 300, "運慶さん！", 110); await sleep(900); clearBubbles();
+  }
+  await say(Q(`運慶は見物人の評判には委細${R("頓着","とんじゃく")}なく${NOMI}と${TSUCHI}を動かしている。いっこう振り向きもしない。`)); await next();
+
+  // 若い男
+  const young = CROWD[5];
+  bubble(300, young.y - 56, "さすがは運慶だな。眼中に我々なしだ。天下の英雄はただ仁王と我とあるのみという態度だ。あっぱれだ。", 230);
+  await say(N("一人の若い男が、自分の方を振り向いて、ほめだした。") + "<br>" + Q("「さすがは運慶だな。眼中に我々なしだ。……」")); await next();
+  clearBubbles();
+  bubble(300, young.y - 56, "あの鑿と槌の使い方を見たまえ。大自在の妙境に達している。", 210);
+  await say(Q(`「あの${NOMI}と${TSUCHI}の使い方を見たまえ。大自在の妙境に達している。」`));
+  await buttons([["近づいて見る", true, true]]);
+  clearBubbles(); swinging = false;
+
+  // 手もと：眉、鼻が、たちまち浮かびあがる
+  scene("carveScene"); await sleep(900);
+  await say(N("運慶は、太い眉を彫り抜いて――"));
+  for (let i=0; i<4; i++) await unkeiStroke(FACE.brow, Math.ceil(FACE.brow.length/4) + 1);
+  await say(N("上から槌を打ち下ろした。"));
+  for (let i=0; i<3; i++) await unkeiStroke(FACE.nose, Math.ceil(FACE.nose.length/3) + 1);
+  await say(Q("小鼻のおっ開いた怒り鼻の側面がたちまち浮きあがってきた。その刀の入れ方がいかにも無遠慮であった。")); await next();
+  for (let i=0; i<6; i++) await unkeiStroke(FACE.rest, Math.ceil(FACE.rest.length/6) + 1);
+  // 残った木の皮も払って、顔がすっかり現れる
+  await animate(900, p => $("faceCover").setAttribute("opacity", 1 - p));
+  $("miniBrow").setAttribute("opacity", 1); $("miniNose").setAttribute("opacity", 1);
+  await say(Q("「よくああ無造作に鑿を使って、思うような眉や鼻ができるものだな。」") + N("と、自分は独り言のように言った。")); await next();
+  await say(N("すると、さっきの若い男が言った。") + "<br>" + Q("「なに、あれは眉や鼻を鑿で作るんじゃない。あのとおりの眉や鼻が木の中に埋まっているのを、鑿と槌の力で掘り出すまでだ。」")); await next();
+  await say(Q("自分はこのとき初めて彫刻とはそんなものかと思いだした。果たしてそうなら誰にでもできることだと思いだした。")); await next();
+  await say(N("自分も、仁王を彫ってみたくなった。急いで家へ帰ろう。")); await next("家へ帰る");
+
+  // 家の裏で、自分で彫る
+  scene("yardScene"); await sleep(900);
+  await say(N("家の裏には、薪にするつもりの木が、たくさん積んである。<br>いちばん大きいのを選んで、彫ってみよう。"));
+  const MISS = [
+    "不幸にして、仁王は見当たらなかった。",
+    "その次のにも運悪く掘り当てることができなかった。",
+    "三番目のにも仁王はいなかった。"
+  ];
+  for (let k=0; k<3; k++){
+    resetLog(k + 1);
+    $("count").textContent = `${k+1}本目`; $("count").classList.remove("hidden");
+    if (k) await say(N(k === 1 ? "次の木を彫ってみよう。" : "もう一本。"));
+    for (let i=0; i<3; i++){ await buttons([["鑿をふるう", true, true]]); await playerStroke(); }
+    await sleep(400);
+    await say(N("……出てきたのは、木目と節だけ。") + "<br>" + Q(MISS[k]));
+    S.logs = k + 1; save(); drawPile(k + 1);
+    await next(k < 2 ? "次の木へ" : "次へ");
+  }
+  // 片っ端から
+  await say(Q("自分は積んである薪を片っ端から彫ってみたが"));
+  for (let k=3; k<16; k++){
+    resetLog(k + 1); $("count").textContent = `${k+1}本目`;
+    await playerStroke(); await playerStroke(); await playerStroke();
+    drawPile(k + 1); S.logs = k + 1;
+  }
+  save();
+  await say(Q("どれもこれも仁王を隠しているのはなかった。")); await next();
+  $("count").classList.add("hidden");
+  await say(Q("ついに明治の木にはとうてい仁王は埋まっていないものだと悟った。それで運慶が今日まで生きている理由もほぼわかった。")); await next("おわり");
+  showEnd();
+}
+
+const FEEL = {A:"Ａ　周りの声を気にせず、自分の仕事に打ちこむ人", B:"Ｂ　古い時代のままで、今の世の中とは関係のない人"};
+function showEnd(){
+  $("log").innerHTML = `あなたが彫った薪は <b>${S.logs}本</b>。どれからも、仁王は出てきませんでした。<br>運慶は、${S.spoke ? "あなたが声をかけても" : "見物人が何を言っても"}、一度も振り向きませんでした。`;
+  $("a1").value = S.a1; $("other").value = S.other;
+  document.querySelectorAll('input[name=feel]').forEach(r => r.checked = r.value === S.feel);
+  $("end").classList.remove("hidden");
+}
+["a1","other"].forEach(id => $(id).addEventListener("input", e => { S[id] = e.target.value; save(); }));
+$("other").addEventListener("focus", () => { S.feel = "C"; document.querySelector('input[value=C]').checked = true; save(); });
+document.querySelectorAll('input[name=feel]').forEach(r => r.addEventListener("change", () => { S.feel = r.value; save(); }));
+function outText(){
+  const feel = S.feel === "C" ? `Ｃ　その他（${S.other.trim()}）` : (FEEL[S.feel] || "（未選択）");
+  return ["【夢十夜「第六夜」　読む前の予想】",
+    "問い　運慶は、どんな人だと思う？",
+    `選んだもの：${feel}`,
+    `理由：${S.a1.trim() || "（未記入）"}`].join("\n");
+}
+$("copyBtn").addEventListener("click", () => {
+  const text = outText();
+  const fallback = () => {
+    const ta = document.createElement("textarea"); ta.value = text; ta.setAttribute("readonly",""); ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, text.length);
+    let ok=false; try{ ok=document.execCommand("copy"); }catch(e){}
+    document.body.removeChild(ta); toast(ok ? "コピーしました" : "コピーできませんでした");
+  };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(()=>toast("コピーしました"), fallback);
+  else fallback();
+});
+$("againBtn").addEventListener("click", play);
+$("startBtn").addEventListener("click", () => { $("title").classList.add("hidden"); play(); });
+resetFace(); resetLog(1);
+</script>
+</body>
+</html>
