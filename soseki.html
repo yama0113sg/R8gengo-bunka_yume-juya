@@ -135,7 +135,7 @@ pre.out{white-space:pre-wrap;word-break:break-all;background:#fff;border:1px sol
 
 <main class="wrap">
   <section class="pane on" id="pane-watch">
-    <p class="note">章ごとに、聞き取り問題に答えます。<b>まちがえたら、あと1回だけ答え直せます</b>（正解は2回目のあとに出ます）。上の番号を押すと、その章へ移れます。2章からは、その時期の漱石の<b>心の状態</b>を −5〜+5 で選び、理由を一言書きます（正解はありません）。</p>
+    <p class="note">章ごとに、聞き取り問題に答えます。<b>まちがえたら、あと1回だけ答え直せます</b>（正解は2回目のあとに出ます）。上の番号を押すと、その章へ移れます。第1章からは、その時期の漱石の<b>心の状態</b>を −5〜+5 で選び、理由を一言書きます（正解はありません）。</p>
     <div class="chNav" id="chNav"></div>
     <div id="chapters"></div>
     <div class="next"><button class="big" data-go="after">② 見た後に へ進む</button></div>
@@ -301,7 +301,7 @@ const CHAPTERS = [
   {no:7, title:"胃を病む漱石", from:"33:09", to:"36:21", sec:1989, mood:true, qs:[
     {q:"漱石を苦しめ続けた病気は？",
      c:["結核","心臓病",r("胃潰瘍","いかいよう"),"骨折"], a:2,
-     n:"「肺を病んだ」のは子規のほうでした（第4章）。漱石を苦しめたのは胃の病です。"},
+     n:"「肺を病んだ」のは子規のほうでした（第3章）。漱石を苦しめたのは胃の病です。"},
     {q:"明治43年（1910年）、漱石が大量の血をはき、生死の境をさまよった場所は？",
      c:["熊本","ロンドン","松山",`伊豆の${r("修善寺","しゅぜんじ")}`], a:3,
      n:"「修善寺の大患」と呼ばれます。この体験のあと、漱石の作品は人間の内面をより深く見つめるものになっていきます。"},
@@ -327,13 +327,16 @@ const CHAPTERS = [
      n:"「天に則って私を去る」、つまり小さな自分へのこだわりを捨てて、大きな自然の道理に従うという意味です。"},
     {q:"倒れた漱石の治療に専念した医師は、かつての誰？",
      c:["ロンドンの下宿の主人","子規の俳句の弟子","熊本・五高の同僚",`松山時代の教え子・${r("真鍋嘉一郎","まなべかいちろう")}`], a:3,
-     n:"第3章で、授業中に「先生、違います」と言ったあの生徒です。大学の講義を休みにして、漱石の治療にあたりました。"},
+     n:"第2章で、授業中に「先生、違います」と言ったあの生徒です。大学の講義を休みにして、漱石の治療にあたりました。"},
     {q:"漱石の最期として正しいものは？",
      c:["明治45年（1912年）、明治の終わりとともに亡くなった",`大正5年（1916年）、『${r("明暗","めいあん")}』を書いている途中で亡くなった`,"大正15年（1926年）、すべての作品を書き終えて亡くなった","明治38年（1905年）、『猫』を発表した直後に亡くなった"], a:1,
      n:"49歳でした。原稿用紙に連載の番号「189」を書いたまま、机に突っ伏していたといいます。『明暗』は未完のまま残されました。"}
   ]}
 ];
 
+// 動画の目次どおり、イントロダクションは「はじめに」、若き日の漱石から第1章と数える
+const chName = c => c.no === 1 ? "はじめに" : `第${c.no-1}章`;
+const chShort = c => c.no === 1 ? "序" : String(c.no-1);
 const MOOD_CH = CHAPTERS.filter(c => c.mood);
 const YUME_OPTS = [
   {t:"ロンドン留学中（明治33〜35年ごろ）", ok:false},
@@ -376,7 +379,7 @@ function buildChapters(){
   root.innerHTML = CHAPTERS.map(ch => `
     <article class="ch" id="ch${ch.no}">
       <div class="chHead">
-        <h2><small>第${ch.no}章</small>${ch.title}</h2>
+        <h2><small>${chName(ch)}</small>${ch.title}</h2>
         <span class="time">動画 <a href="${VIDEO}&t=${ch.sec}s" target="_blank" rel="noopener">${ch.from}</a> 〜 ${ch.to}</span>
       </div>
       ${ch.qs.map((q,i)=>`
@@ -475,7 +478,7 @@ function drawGraph(){
     const v = S.mood[c.no];
     const lbl = c.title.replace("での漱石","").replace("の漱石","").replace("漱石の","");
     s += `<text x="${x(i)}" y="${H-B+22}" font-size="13" text-anchor="middle" fill="#2b2622">${lbl}</text>`;
-    s += `<text x="${x(i)}" y="${H-B+40}" font-size="11" text-anchor="middle" fill="#6f665c">第${c.no}章</text>`;
+    s += `<text x="${x(i)}" y="${H-B+40}" font-size="11" text-anchor="middle" fill="#6f665c">${chName(c)}</text>`;
     if (v === undefined){ path += " "; return; }
     path += (path.trim()==="" || path.endsWith(" ") ? " M" : " L") + x(i) + " " + y(v);
     pts += `<circle cx="${x(i)}" cy="${y(v)}" r="6" fill="${v<0?"#4a6c96":v>0?"#c47a22":"#6f665c"}"/>`;
@@ -507,7 +510,7 @@ function paintYume(){
   const fb = $("yumeFb");
   if (S.yume === null){ fb.classList.remove("show"); return; }
   const ok = YUME_OPTS[S.yume].ok;
-  fb.innerHTML = (ok ? `<span class="mark o">正解</span>` : `<span class="mark x">もう一度考えよう</span>`) + (ok ? YUME_NOTE : "「夢十夜」は明治41年（1908年）の作品です。第6章・第7章の年号をヒントにしよう。");
+  fb.innerHTML = (ok ? `<span class="mark o">正解</span>` : `<span class="mark x">もう一度考えよう</span>`) + (ok ? YUME_NOTE : "「夢十夜」は明治41年（1908年）の作品です。第5章・第6章の年号をヒントにしよう。");
   fb.classList.add("show");
 }
 
@@ -551,13 +554,13 @@ function buildOut(){
   const MARK = {o:"○", t:"△", x:"×", retry:"×", none:"－"};
   CHAPTERS.forEach(c => {
     const marks = c.qs.map((q,i)=>MARK[stateOf(c.no+"-"+i)]).join("");
-    L.push(`　第${c.no}章 ${c.title}：${marks}`);
+    L.push(`　${chName(c)} ${c.title}：${marks}`);
   });
   L.push("");
   L.push("■ 漱石の人生グラフ（心の状態 −5〜+5）");
   MOOD_CH.forEach(c => {
     const v = S.mood[c.no], w = (S.why[c.no]||"").trim();
-    L.push(`　第${c.no}章 ${c.title}：${v===undefined?"未回答":(v>0?"+"+v:v)}${w?"　理由："+w:""}`);
+    L.push(`　${chName(c)} ${c.title}：${v===undefined?"未回答":(v>0?"+"+v:v)}${w?"　理由："+w:""}`);
   });
   L.push("");
   L.push("■ 「夢十夜」はどこに入る？");
@@ -633,7 +636,7 @@ function showCh(no, scroll){
     window.scrollTo({top: $("ch"+no).getBoundingClientRect().top + window.scrollY - navH - 10});
   }
 }
-$("chNav").innerHTML = CHAPTERS.map(c=>`<button data-no="${c.no}" aria-label="第${c.no}章 ${c.title}">${c.no}</button>`).join("");
+$("chNav").innerHTML = CHAPTERS.map(c=>`<button data-no="${c.no}" aria-label="${chName(c)} ${c.title}">${chShort(c)}</button>`).join("");
 $("chNav").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>showCh(+b.dataset.no, true)));
 function showTab(t){
   S.tab = t; save();
