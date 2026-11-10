@@ -135,15 +135,15 @@ pre.out{white-space:pre-wrap;word-break:break-all;background:#fff;border:1px sol
 
 <main class="wrap">
   <section class="pane on" id="pane-watch">
-    <p class="note">章ごとに、聞き取り問題に答えます。<b>まちがえたら、あと1回だけ答え直せます</b>（正解は2回目のあとに出ます）。上の番号を押すと、その章へ移れます。第1章からは、その時期の漱石の<b>心の状態</b>を −5〜+5 で選び、理由を一言書きます（正解はありません）。</p>
+    <p class="note">章ごとに、聞き取り問題に答えます。<b>まちがえたら、あと1回だけ答え直せます</b>（正解は2回目のあとに出ます）。上の番号を押すと、その章へ移れます。</p>
     <div class="chNav" id="chNav"></div>
     <div id="chapters"></div>
     <div class="next"><button class="big" data-go="after">② 見た後に へ進む</button></div>
   </section>
 
   <section class="pane" id="pane-after">
-    <h3 class="sec">漱石の人生グラフ</h3>
-    <div class="box">
+    <h3 class="sec mood-only">漱石の人生グラフ</h3>
+    <div class="box mood-only">
       <div class="graphWrap"><svg class="graph" id="graph" viewBox="0 0 700 330" role="img" aria-label="漱石の心の状態の折れ線グラフ"></svg></div>
       <p class="hint" id="graphHint"></p>
     </div>
@@ -156,7 +156,7 @@ pre.out{white-space:pre-wrap;word-break:break-all;background:#fff;border:1px sol
     </div>
 
     <div class="box">
-      <p class="qt" style="margin-top:0">人生グラフを見ながら予想しよう。この時期の漱石は、どんな「夢」を書いたと思いますか。</p>
+      <p class="qt" style="margin-top:0">この時期の漱石は、どんな「夢」を書いたと思いますか。</p>
       <p class="hint" style="margin:0 0 6px">「夢十夜」は十の夢の話です。いくつかの夜は「こんな夢を見た。」という一文で始まります。</p>
       <div class="chips" id="yumeChips"></div>
       <textarea id="yumeGuess" rows="3" placeholder="例：〇〇な夢を書いたと思う。なぜなら、このころの漱石は……"></textarea>
@@ -337,7 +337,9 @@ const CHAPTERS = [
 // 動画の目次どおり、イントロダクションは「はじめに」、若き日の漱石から第1章と数える
 const chName = c => c.no === 1 ? "はじめに" : `第${c.no-1}章`;
 const chShort = c => c.no === 1 ? "序" : String(c.no-1);
-const MOOD_CH = CHAPTERS.filter(c => c.mood);
+// 心の状態のメーターと人生グラフを使うかどうか
+const USE_MOOD = false;
+const MOOD_CH = USE_MOOD ? CHAPTERS.filter(c => c.mood) : [];
 const YUME_OPTS = [
   {t:"ロンドン留学中（明治33〜35年ごろ）", ok:false},
   {t:"朝日新聞社に入ったあと、修善寺の大患より前（明治40〜43年）", ok:true},
@@ -388,7 +390,7 @@ function buildChapters(){
           <div class="choices">${q.c.map((c,j)=>`<button data-j="${j}">${c}</button>`).join("")}</div>
           <div class="fb"></div>
         </div>`).join("")}
-      ${ch.mood ? `
+      ${ch.mood && USE_MOOD ? `
         <div class="mood" data-ch="${ch.no}">
           <p class="qt">この時期の漱石の心の状態は？</p>
           <div class="scale">${[-5,-4,-3,-2,-1,0,1,2,3,4,5].map(v=>`<button data-v="${v}" class="${v<0?"neg":v>0?"pos":"zero"}">${v>0?"+"+v:v}</button>`).join("")}</div>
@@ -491,7 +493,7 @@ function drawGraph(){
 function buildAfter(){
   $("yumeOpt").innerHTML = YUME_OPTS.map((o,i)=>`<button data-i="${i}">${o.t}</button>`).join("");
   $("yumeOpt").querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
-    S.yume = +b.dataset.i; save(); paintYume(); drawGraph(); updateProg();
+    S.yume = +b.dataset.i; save(); paintYume(); if (USE_MOOD) drawGraph(); updateProg();
   }));
   paintYume();
   $("yumeChips").innerHTML = YUME_CHIPS.map(c=>`<button>${c}</button>`).join("");
@@ -557,12 +559,12 @@ function buildOut(){
     L.push(`　${chName(c)} ${c.title}：${marks}`);
   });
   L.push("");
-  L.push("■ 漱石の人生グラフ（心の状態 −5〜+5）");
+  if (USE_MOOD) L.push("■ 漱石の人生グラフ（心の状態 −5〜+5）");
   MOOD_CH.forEach(c => {
     const v = S.mood[c.no], w = (S.why[c.no]||"").trim();
     L.push(`　${chName(c)} ${c.title}：${v===undefined?"未回答":(v>0?"+"+v:v)}${w?"　理由："+w:""}`);
   });
-  L.push("");
+  if (USE_MOOD) L.push("");
   L.push("■ 「夢十夜」はどこに入る？");
   L.push("　" + (S.yume===null ? "未回答" : YUME_OPTS[S.yume].t + (YUME_OPTS[S.yume].ok?"（正解）":"（不正解）")));
   L.push("■ この時期の漱石が書きそうな夢（予想）");
@@ -587,7 +589,7 @@ function refreshSubmit(){
   const items = [
     ["組・番号・氏名", S.kumi && S.ban && S.name],
     [`聞き取り問題（${sc.done} / ${totalQ}）`, sc.done===totalQ],
-    [`人生グラフ（${moodDone} / ${MOOD_CH.length}）`, moodDone===MOOD_CH.length],
+    ...(USE_MOOD ? [[`人生グラフ（${moodDone} / ${MOOD_CH.length}）`, moodDone===MOOD_CH.length]] : []),
     ["夢十夜の時期", S.yume!==null],
     ["夢の予想", (S.yumeGuess||"").trim()],
     ["印象に残ったエピソードと理由", S.ep!==null && (S.epWhy||"").trim()]
@@ -619,7 +621,7 @@ function updateProg(){
   paintChNav();
 }
 function chDone(ch){
-  return ch.qs.every((q,i)=>["o","t","x"].includes(stateOf(ch.no+"-"+i))) && (!ch.mood || S.mood[ch.no]!==undefined);
+  return ch.qs.every((q,i)=>["o","t","x"].includes(stateOf(ch.no+"-"+i))) && (!ch.mood || !USE_MOOD || S.mood[ch.no]!==undefined);
 }
 function paintChNav(){
   document.querySelectorAll(".chNav button").forEach(b => {
@@ -642,7 +644,7 @@ function showTab(t){
   S.tab = t; save();
   document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.toggle("on", b.dataset.tab===t));
   document.querySelectorAll("section.pane").forEach(p=>p.classList.toggle("on", p.id==="pane-"+t));
-  if (t==="after") drawGraph();
+  if (t==="after" && USE_MOOD) drawGraph();
   if (t==="submit") refreshSubmit();
   window.scrollTo({top:0});
 }
@@ -650,6 +652,7 @@ document.querySelectorAll("nav.tabs button").forEach(b=>b.addEventListener("clic
 document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.go)));
 ["kumi","ban","name"].forEach(id => { const el=$(id); el.value=S[id]||""; el.addEventListener("input",()=>{S[id]=el.value; save();}); });
 
+if (!USE_MOOD) document.querySelectorAll(".mood-only").forEach(e => e.remove());
 buildChapters(); buildAfter(); buildSubmit(); showCh(S.ch || 1, false); updateProg();
 showTab(S.tab || "watch");
 </script>
