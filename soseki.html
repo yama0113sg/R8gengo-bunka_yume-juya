@@ -339,6 +339,8 @@ const chName = c => c.no === 1 ? "はじめに" : `第${c.no-1}章`;
 const chShort = c => c.no === 1 ? "序" : String(c.no-1);
 // 心の状態のメーターと人生グラフを使うかどうか
 const USE_MOOD = false;
+// 「見た後に」の画面（夢十夜の時期・夢の予想）を使うかどうか
+const USE_AFTER = false;
 const MOOD_CH = USE_MOOD ? CHAPTERS.filter(c => c.mood) : [];
 const YUME_OPTS = [
   {t:"ロンドン留学中（明治33〜35年ごろ）", ok:false},
@@ -565,12 +567,14 @@ function buildOut(){
     L.push(`　${chName(c)} ${c.title}：${v===undefined?"未回答":(v>0?"+"+v:v)}${w?"　理由："+w:""}`);
   });
   if (USE_MOOD) L.push("");
-  L.push("■ 「夢十夜」はどこに入る？");
-  L.push("　" + (S.yume===null ? "未回答" : YUME_OPTS[S.yume].t + (YUME_OPTS[S.yume].ok?"（正解）":"（不正解）")));
-  L.push("■ この時期の漱石が書きそうな夢（予想）");
-  if (S.yumeChips.length) L.push("　キーワード：" + S.yumeChips.join("・"));
-  L.push("　" + ((S.yumeGuess||"").trim() || "未回答"));
-  L.push("");
+  if (USE_AFTER){
+    L.push("■ 「夢十夜」はどこに入る？");
+    L.push("　" + (S.yume===null ? "未回答" : YUME_OPTS[S.yume].t + (YUME_OPTS[S.yume].ok?"（正解）":"（不正解）")));
+    L.push("■ この時期の漱石が書きそうな夢（予想）");
+    if (S.yumeChips.length) L.push("　キーワード：" + S.yumeChips.join("・"));
+    L.push("　" + ((S.yumeGuess||"").trim() || "未回答"));
+    L.push("");
+  }
   L.push("■ 一番印象に残ったエピソード");
   let ep = S.ep===null ? "未回答" : EPISODES[S.ep];
   if (S.ep === EPISODES.length-1) ep = "その他：" + ((S.epOther||"").trim() || "（未記入）");
@@ -590,8 +594,7 @@ function refreshSubmit(){
     ["組・番号・氏名", S.kumi && S.ban && S.name],
     [`聞き取り問題（${sc.done} / ${totalQ}）`, sc.done===totalQ],
     ...(USE_MOOD ? [[`人生グラフ（${moodDone} / ${MOOD_CH.length}）`, moodDone===MOOD_CH.length]] : []),
-    ["夢十夜の時期", S.yume!==null],
-    ["夢の予想", (S.yumeGuess||"").trim()],
+    ...(USE_AFTER ? [["夢十夜の時期", S.yume!==null], ["夢の予想", (S.yumeGuess||"").trim()]] : []),
     ["印象に残ったエピソードと理由", S.ep!==null && (S.epWhy||"").trim()]
   ];
   $("checkList").innerHTML = items.map(([t,ok])=>`<li><span>${t}</span><span class="${ok?"ok":"ng"}">${ok?"済":"まだ"}</span></li>`).join("");
@@ -615,8 +618,8 @@ function copyOut(){
 /* ---------- 共通 ---------- */
 function updateProg(){
   const sc = score(), moodDone = MOOD_CH.filter(c=>S.mood[c.no]!==undefined).length;
-  const all = totalQ + MOOD_CH.length + 3;
-  const got = sc.done + moodDone + (S.yume!==null?1:0) + ((S.yumeGuess||"").trim()?1:0) + (S.ep!==null && (S.epWhy||"").trim()?1:0);
+  const all = totalQ + MOOD_CH.length + (USE_AFTER ? 3 : 1);
+  const got = sc.done + moodDone + (USE_AFTER ? (S.yume!==null?1:0) + ((S.yumeGuess||"").trim()?1:0) : 0) + (S.ep!==null && (S.epWhy||"").trim()?1:0);
   $("progBar").style.width = (got/all*100) + "%";
   paintChNav();
 }
@@ -653,7 +656,15 @@ document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=
 ["kumi","ban","name"].forEach(id => { const el=$(id); el.value=S[id]||""; el.addEventListener("input",()=>{S[id]=el.value; save();}); });
 
 if (!USE_MOOD) document.querySelectorAll(".mood-only").forEach(e => e.remove());
-buildChapters(); buildAfter(); buildSubmit(); showCh(S.ch || 1, false); updateProg();
+if (!USE_AFTER){
+  document.querySelector('nav.tabs button[data-tab="after"]').remove();
+  $("pane-after").remove();
+  document.querySelector('nav.tabs button[data-tab="submit"]').textContent = "② 提出";
+  const go = document.querySelector('#pane-watch [data-go="after"]');
+  go.dataset.go = "submit"; go.textContent = "② 提出 へ進む";
+  if (S.tab === "after") S.tab = "submit";
+}
+buildChapters(); if (USE_AFTER) buildAfter(); buildSubmit(); showCh(S.ch || 1, false); updateProg();
 showTab(S.tab || "watch");
 </script>
 </body>
