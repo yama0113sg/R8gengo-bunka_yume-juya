@@ -42,13 +42,11 @@ section.pane{display:none;padding-top:18px}
 section.pane.on{display:block}
 .note{background:var(--aiSoft);border-radius:12px;padding:12px 16px;font-size:15px;color:var(--ai);margin:0 0 18px}
 
-.ch{display:none;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 18px 8px;margin:0 0 18px}
-.ch.on{display:block}
+.ch{display:block;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 18px 8px;margin:0 0 18px}
 .chNav{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin:0 0 14px}
 .chNav button{font:inherit;font-size:15px;font-weight:700;padding:8px 0;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--sub);cursor:pointer;position:relative}
 .chNav button.done{background:var(--okSoft);border-color:var(--ok);color:var(--ok)}
 .chNav button.done::after{content:"✓";font-size:11px;position:absolute;top:1px;right:5px}
-.chNav button.on{background:var(--ai);border-color:var(--ai);color:#fff}
 .pager{display:flex;gap:10px}
 .pager button{flex:1}
 .pager button:disabled{visibility:hidden}
@@ -137,28 +135,28 @@ pre.out{white-space:pre-wrap;word-break:break-all;background:#fff;border:1px sol
 
 <main class="wrap">
   <section class="pane on" id="pane-watch">
-    <p class="note">一章ずつ、聞き取り問題に答えます。<b>まちがえたら、あと1回だけ答え直せます</b>（正解は2回目のあとに出ます）。上の番号で、どの章にも移れます。2章からは、その時期の漱石の<b>心の状態</b>を −5〜+5 で選び、理由を一言書きます（正解はありません）。</p>
+    <p class="note">章ごとに、聞き取り問題に答えます。<b>まちがえたら、あと1回だけ答え直せます</b>（正解は2回目のあとに出ます）。上の番号を押すと、その章へ移れます。</p>
     <div class="chNav" id="chNav"></div>
     <div id="chapters"></div>
-    <div class="pager next"><button class="big sub" id="prevCh">← 前の章</button><button class="big" id="nextCh">次の章 →</button></div>
+    <div class="next"><button class="big" data-go="after">② 見た後に へ進む</button></div>
   </section>
 
   <section class="pane" id="pane-after">
-    <h3 class="sec">漱石の人生グラフ</h3>
-    <div class="box">
+    <h3 class="sec mood-only">漱石の人生グラフ</h3>
+    <div class="box mood-only">
       <div class="graphWrap"><svg class="graph" id="graph" viewBox="0 0 700 330" role="img" aria-label="漱石の心の状態の折れ線グラフ"></svg></div>
       <p class="hint" id="graphHint"></p>
     </div>
 
     <h3 class="sec">「夢十夜」は、どこに入る？</h3>
     <div class="box">
-      <p style="margin-top:0">「夢十夜」は、<b>1908年（明治41年）</b>に朝日新聞に連載された作品です。漱石の人生のどの時期にあたるでしょうか。</p>
+      <p style="margin-top:0">「夢十夜」は、<b>明治41年（1908年）</b>に朝日新聞に連載された作品です。漱石の人生のどの時期にあたるでしょうか。</p>
       <div class="opt" id="yumeOpt"></div>
       <div class="fb" id="yumeFb"></div>
     </div>
 
     <div class="box">
-      <p class="qt" style="margin-top:0">人生グラフを見ながら予想しよう。この時期の漱石は、どんな「夢」を書いたと思いますか。</p>
+      <p class="qt" style="margin-top:0">この時期の漱石は、どんな「夢」を書いたと思いますか。</p>
       <p class="hint" style="margin:0 0 6px">「夢十夜」は十の夢の話です。いくつかの夜は「こんな夢を見た。」という一文で始まります。</p>
       <div class="chips" id="yumeChips"></div>
       <textarea id="yumeGuess" rows="3" placeholder="例：〇〇な夢を書いたと思う。なぜなら、このころの漱石は……"></textarea>
@@ -210,18 +208,15 @@ const CHAPTERS = [
   {no:1, title:"イントロダクション", from:"0:00", to:"1:46", sec:0, mood:false, qs:[
     {q:"動画の最初に紹介された三つの作品の組み合わせは？",
      c:["『羅生門』『鼻』『蜘蛛の糸』","『吾輩は猫である』『坊っちゃん』『こころ』","『舞姫』『高瀬舟』『山椒大夫』","『走れメロス』『人間失格』『斜陽』"], a:1,
-     n:"『羅生門』は芥川龍之介、『舞姫』は森鷗外、『走れメロス』は太宰治の作品です。漱石は、若き日の芥川の才能にいち早く気づき、励ましの言葉を送っています。"},
-    {q:"『吾輩は猫である』の猫のモデルになった、漱石の家の猫について正しいものは？",
-     c:["「タマ」と呼ばれてかわいがられた","正岡子規からもらった","名前がつけられていなかった","ロンドンから連れて帰った"], a:2,
-     n:"作品の書き出し「吾輩は猫である。名前はまだ無い。」のとおり、実際の猫にも名前がありませんでした。"}
+     n:"『羅生門』は芥川龍之介、『舞姫』は森鷗外、『走れメロス』は太宰治の作品です。漱石は、若き日の芥川の才能にいち早く気づき、励ましの言葉を送っています。"}
   ]},
   {no:2, title:"若き日の漱石", from:"1:46", to:"12:26", sec:106, mood:true, qs:[
     {q:"漱石が生まれたのは何年？",
      c:["1867年（慶応3年）","1868年（明治元年）","1872年（明治5年）","1889年（明治22年）"], a:0,
      n:"大政奉還があった、江戸時代の最後の年です。翌年が明治元年なので、漱石の年齢は「明治何年」の数字とほぼ同じになります。"},
     {q:"漱石の本名は？",
-     c:["夏目直克","塩原昌之助",r("正岡常規","まさおかつねのり"),"夏目金之助"], a:3,
-     n:"夏目直克は父、塩原昌之助は養父、正岡常規は子規の本名です。「漱石」は、のちに使い始めたペンネームです。"},
+     c:["夏目直克","夏目漱太郎","夏目石之助","夏目金之助"], a:3,
+     n:"夏目直克は父の名前です。「漱石」は、のちに使い始めたペンネームです。"},
     {q:"幼いころの漱石について正しいものは？",
      c:["一人っ子として大切に育てられた","生まれてまもなく、よその家に出された","武士の家の長男として期待された","子どものころから英語を習っていた"], a:1,
      n:`里子や養子に出され、家族の愛情を感じにくい少年時代を過ごしました。心の支えは母・${r("千枝","ちえ")}でした。`},
@@ -279,7 +274,7 @@ const CHAPTERS = [
     {q:"このころ日本では、漱石についてどんなうわさが流れた？",
      c:["「漱石は発狂した」","「イギリスで大学教授になった」","「イギリス人と結婚した」","「大金持ちになった」"], a:0,
      n:`研究報告がとどこおり、そのようなうわさが流れるほど追いつめられていました。${r("神経衰弱","しんけいすいじゃく")}は帰国後も続きます。`},
-    {q:"ロンドン留学中の1902年に亡くなり、漱石に大きな衝撃を与えた友人は？",
+    {q:"ロンドン留学中の明治35年（1902年）に亡くなり、漱石に大きな衝撃を与えた友人は？",
      c:[YONE, KYOSHI, r("寺田寅彦","てらだとらひこ"), SHIKI], a:3,
      n:"この知らせもあってか漱石の神経衰弱はますます悪化し、文部省は予定より早く帰国させることを決めました。"},
     {q:"帰国後、漱石は東京帝国大学で誰の後任として英文学を教えた？",
@@ -292,30 +287,30 @@ const CHAPTERS = [
      n:"何度追い払っても戻ってきたこの猫が、『吾輩は猫である』のモデルになりました。"},
     {q:"『吾輩は猫である』を書くよう勧めたのは？",
      c:[SHIKI, KYOSHI, KYOKO, YONE], a:1,
-     n:"子規はすでに1902年に亡くなっていました。子規の後を継いで俳句雑誌を出していた虚子が、漱石に執筆を勧めました。"},
+     n:"子規はすでに明治35年（1902年）に亡くなっていました。子規の後を継いで俳句雑誌を出していた虚子が、漱石に執筆を勧めました。"},
     {q:"訪ねてくる門下生が多くて執筆が進まないため、面会日が決められた。その集まりの名前は？",
      c:["木曜会","日曜会","ホトトギス会","赤門会"], a:0,
      n:"毎週木曜日の午後3時以降と決められました。気難しい一方で、手紙には必ず返事を書く、面倒見のよい人でもありました。"},
     {q:"『猫』が大ヒットしたあと、漱石が選んだ道は？",
      c:["大学の先生を続けながら、趣味で小説を書いた","大学の職を辞めて、朝日新聞社の専属作家になった","政治家になった","もう一度ロンドンへ留学した"], a:1,
-     n:"1907年（明治40年）、40歳のときです。安定した地位よりも、書くことに打ちこめる環境を選びました。"}
+     n:"明治40年（1907年）、40歳のときです。安定した地位よりも、書くことに打ちこめる環境を選びました。"}
   ]},
   {no:7, title:"胃を病む漱石", from:"33:09", to:"36:21", sec:1989, mood:true, qs:[
     {q:"漱石を苦しめ続けた病気は？",
      c:["結核","心臓病",r("胃潰瘍","いかいよう"),"骨折"], a:2,
-     n:"ちなみに、正岡子規の命をうばったのは結核でした。"},
-    {q:"1910年（明治43年）、漱石が大量の血をはき、生死の境をさまよった場所は？",
+     n:"「肺を病んだ」のは子規のほうでした（第3章）。漱石を苦しめたのは胃の病です。"},
+    {q:"明治43年（1910年）、漱石が大量の血をはき、生死の境をさまよった場所は？",
      c:["熊本","ロンドン","松山",`伊豆の${r("修善寺","しゅぜんじ")}`], a:3,
      n:"「修善寺の大患」と呼ばれます。この体験のあと、漱石の作品は人間の内面をより深く見つめるものになっていきます。"},
-    {q:"1911年、文部省から文学博士号を贈られることになった漱石は？",
+    {q:"明治44年（1911年）、文部省から文学博士号を贈られることになった漱石は？",
      c:["喜んで受け取った","辞退した","大学に戻ることを条件に受け取った","朝日新聞社に判断をまかせた"], a:1,
      n:"「へそ曲がりだ」と非難する声も、「痛快だ」と支持する声もあり、世間の注目を集めました。"},
     {q:"このころ漱石を襲った家族の悲しみは？",
      c:[`幼い末娘・${r("雛子","ひなこ")}の死`,"妻との離婚","家の火事","兄の破産"], a:0,
-     n:"雛子はまだ2歳でした。漱石はその死を、のちに『彼岸過迄』の中の「雨の降る日」という章に書きとめています。"}
+     n:"雛子はまだ2歳でした。漱石はその死を、のちに『彼岸過迄』の中の「雨の降る日」という章に書きとめています（動画では「雨に降る夜」と聞こえます）。"}
   ]},
   {no:8, title:"漱石の最後", from:"36:21", to:"46:08", sec:2181, mood:true, qs:[
-    {q:"1912年、明治天皇が亡くなった。動画で紹介された『こころ』の「先生」の遺書には、どんな気持ちが書かれていた？",
+    {q:"明治45年（1912年）、明治天皇が亡くなった。動画で紹介された『こころ』の「先生」の遺書には、どんな気持ちが書かれていた？",
      c:["新しい時代が来ることへの喜び","明治の精神が天皇に始まって天皇に終わったような気がした","早く大正の世を見てみたいという期待","自分には関係のない遠い出来事のように思えた"], a:1,
      n:"明治の前の年に生まれた漱石は、まさに明治とともに生きた人でした。"},
     {q:"自分の過去や弱さを見つめて書いた、自伝的な作品は？",
@@ -329,21 +324,28 @@ const CHAPTERS = [
      n:"「天に則って私を去る」、つまり小さな自分へのこだわりを捨てて、大きな自然の道理に従うという意味です。"},
     {q:"倒れた漱石の治療に専念した医師は、かつての誰？",
      c:["ロンドンの下宿の主人","子規の俳句の弟子","熊本・五高の同僚",`松山時代の教え子・${r("真鍋嘉一郎","まなべかいちろう")}`], a:3,
-     n:"第3章で、授業中に「先生、違います」と言ったあの生徒です。大学の講義を休みにして、漱石の治療にあたりました。"},
+     n:"第2章で、授業中に「先生、違います」と言ったあの生徒です。大学の講義を休みにして、漱石の治療にあたりました。"},
     {q:"漱石の最期として正しいものは？",
-     c:["1912年、明治の終わりとともに亡くなった",`1916年（大正5年）、『${r("明暗","めいあん")}』を書いている途中で亡くなった`,"1926年、すべての作品を書き終えて亡くなった","1905年、『猫』を発表した直後に亡くなった"], a:1,
+     c:["明治45年（1912年）、明治の終わりとともに亡くなった",`大正5年（1916年）、『${r("明暗","めいあん")}』を書いている途中で亡くなった`,"大正15年（1926年）、すべての作品を書き終えて亡くなった","明治38年（1905年）、『猫』を発表した直後に亡くなった"], a:1,
      n:"49歳でした。原稿用紙に連載の番号「189」を書いたまま、机に突っ伏していたといいます。『明暗』は未完のまま残されました。"}
   ]}
 ];
 
-const MOOD_CH = CHAPTERS.filter(c => c.mood);
+// 動画の目次どおり、イントロダクションは「はじめに」、若き日の漱石から第1章と数える
+const chName = c => c.no === 1 ? "はじめに" : `第${c.no-1}章`;
+const chShort = c => c.no === 1 ? "序" : String(c.no-1);
+// 心の状態のメーターと人生グラフを使うかどうか
+const USE_MOOD = false;
+// 「見た後に」の画面（夢十夜の時期・夢の予想）を使うかどうか
+const USE_AFTER = false;
+const MOOD_CH = USE_MOOD ? CHAPTERS.filter(c => c.mood) : [];
 const YUME_OPTS = [
-  {t:"ロンドン留学中（1900〜1902年ごろ）", ok:false},
-  {t:"朝日新聞社に入ったあと、修善寺の大患より前（1907〜1910年）", ok:true},
-  {t:"修善寺の大患のあと（1910年〜）", ok:false},
-  {t:"『明暗』を書いていた最晩年（1916年）", ok:false}
+  {t:"ロンドン留学中（明治33〜35年ごろ）", ok:false},
+  {t:"朝日新聞社に入ったあと、修善寺の大患より前（明治40〜43年）", ok:true},
+  {t:"修善寺の大患のあと（明治43年〜）", ok:false},
+  {t:"『明暗』を書いていた最晩年（大正5年）", ok:false}
 ];
-const YUME_NOTE = "1908年の漱石は41歳。大学を辞めて職業作家になり、毎日の新聞に作品を書いていたころです。";
+const YUME_NOTE = "明治41年（1908年）の漱石は41歳。大学を辞めて職業作家になり、毎日の新聞に作品を書いていたころです。";
 const YUME_CHIPS = ["不安な夢","さびしい夢","こわい夢","なつかしい夢","ふしぎな夢","後悔の夢"];
 const EPISODES = [
   "幼いころ、よその家に出されたこと",
@@ -378,7 +380,7 @@ function buildChapters(){
   root.innerHTML = CHAPTERS.map(ch => `
     <article class="ch" id="ch${ch.no}">
       <div class="chHead">
-        <h2><small>第${ch.no}章</small>${ch.title}</h2>
+        <h2><small>${chName(ch)}</small>${ch.title}</h2>
         <span class="time">動画 <a href="${VIDEO}&t=${ch.sec}s" target="_blank" rel="noopener">${ch.from}</a> 〜 ${ch.to}</span>
       </div>
       ${ch.qs.map((q,i)=>`
@@ -387,7 +389,7 @@ function buildChapters(){
           <div class="choices">${q.c.map((c,j)=>`<button data-j="${j}">${c}</button>`).join("")}</div>
           <div class="fb"></div>
         </div>`).join("")}
-      ${ch.mood ? `
+      ${ch.mood && USE_MOOD ? `
         <div class="mood" data-ch="${ch.no}">
           <p class="qt">この時期の漱石の心の状態は？</p>
           <div class="scale">${[-5,-4,-3,-2,-1,0,1,2,3,4,5].map(v=>`<button data-v="${v}" class="${v<0?"neg":v>0?"pos":"zero"}">${v>0?"+"+v:v}</button>`).join("")}</div>
@@ -477,7 +479,7 @@ function drawGraph(){
     const v = S.mood[c.no];
     const lbl = c.title.replace("での漱石","").replace("の漱石","").replace("漱石の","");
     s += `<text x="${x(i)}" y="${H-B+22}" font-size="13" text-anchor="middle" fill="#2b2622">${lbl}</text>`;
-    s += `<text x="${x(i)}" y="${H-B+40}" font-size="11" text-anchor="middle" fill="#6f665c">第${c.no}章</text>`;
+    s += `<text x="${x(i)}" y="${H-B+40}" font-size="11" text-anchor="middle" fill="#6f665c">${chName(c)}</text>`;
     if (v === undefined){ path += " "; return; }
     path += (path.trim()==="" || path.endsWith(" ") ? " M" : " L") + x(i) + " " + y(v);
     pts += `<circle cx="${x(i)}" cy="${y(v)}" r="6" fill="${v<0?"#4a6c96":v>0?"#c47a22":"#6f665c"}"/>`;
@@ -490,7 +492,7 @@ function drawGraph(){
 function buildAfter(){
   $("yumeOpt").innerHTML = YUME_OPTS.map((o,i)=>`<button data-i="${i}">${o.t}</button>`).join("");
   $("yumeOpt").querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
-    S.yume = +b.dataset.i; save(); paintYume(); drawGraph(); updateProg();
+    S.yume = +b.dataset.i; save(); paintYume(); if (USE_MOOD) drawGraph(); updateProg();
   }));
   paintYume();
   $("yumeChips").innerHTML = YUME_CHIPS.map(c=>`<button>${c}</button>`).join("");
@@ -509,7 +511,7 @@ function paintYume(){
   const fb = $("yumeFb");
   if (S.yume === null){ fb.classList.remove("show"); return; }
   const ok = YUME_OPTS[S.yume].ok;
-  fb.innerHTML = (ok ? `<span class="mark o">正解</span>` : `<span class="mark x">もう一度考えよう</span>`) + (ok ? YUME_NOTE : "「夢十夜」は1908年の作品です。第6章・第7章の年号をヒントにしよう。");
+  fb.innerHTML = (ok ? `<span class="mark o">正解</span>` : `<span class="mark x">もう一度考えよう</span>`) + (ok ? YUME_NOTE : "「夢十夜」は明治41年（1908年）の作品です。第5章・第6章の年号をヒントにしよう。");
   fb.classList.add("show");
 }
 
@@ -553,21 +555,23 @@ function buildOut(){
   const MARK = {o:"○", t:"△", x:"×", retry:"×", none:"－"};
   CHAPTERS.forEach(c => {
     const marks = c.qs.map((q,i)=>MARK[stateOf(c.no+"-"+i)]).join("");
-    L.push(`　第${c.no}章 ${c.title}：${marks}`);
+    L.push(`　${chName(c)} ${c.title}：${marks}`);
   });
   L.push("");
-  L.push("■ 漱石の人生グラフ（心の状態 −5〜+5）");
+  if (USE_MOOD) L.push("■ 漱石の人生グラフ（心の状態 −5〜+5）");
   MOOD_CH.forEach(c => {
     const v = S.mood[c.no], w = (S.why[c.no]||"").trim();
-    L.push(`　第${c.no}章 ${c.title}：${v===undefined?"未回答":(v>0?"+"+v:v)}${w?"　理由："+w:""}`);
+    L.push(`　${chName(c)} ${c.title}：${v===undefined?"未回答":(v>0?"+"+v:v)}${w?"　理由："+w:""}`);
   });
-  L.push("");
-  L.push("■ 「夢十夜」はどこに入る？");
-  L.push("　" + (S.yume===null ? "未回答" : YUME_OPTS[S.yume].t + (YUME_OPTS[S.yume].ok?"（正解）":"（不正解）")));
-  L.push("■ この時期の漱石が書きそうな夢（予想）");
-  if (S.yumeChips.length) L.push("　キーワード：" + S.yumeChips.join("・"));
-  L.push("　" + ((S.yumeGuess||"").trim() || "未回答"));
-  L.push("");
+  if (USE_MOOD) L.push("");
+  if (USE_AFTER){
+    L.push("■ 「夢十夜」はどこに入る？");
+    L.push("　" + (S.yume===null ? "未回答" : YUME_OPTS[S.yume].t + (YUME_OPTS[S.yume].ok?"（正解）":"（不正解）")));
+    L.push("■ この時期の漱石が書きそうな夢（予想）");
+    if (S.yumeChips.length) L.push("　キーワード：" + S.yumeChips.join("・"));
+    L.push("　" + ((S.yumeGuess||"").trim() || "未回答"));
+    L.push("");
+  }
   L.push("■ 一番印象に残ったエピソード");
   let ep = S.ep===null ? "未回答" : EPISODES[S.ep];
   if (S.ep === EPISODES.length-1) ep = "その他：" + ((S.epOther||"").trim() || "（未記入）");
@@ -586,9 +590,8 @@ function refreshSubmit(){
   const items = [
     ["組・番号・氏名", S.kumi && S.ban && S.name],
     [`聞き取り問題（${sc.done} / ${totalQ}）`, sc.done===totalQ],
-    [`人生グラフ（${moodDone} / ${MOOD_CH.length}）`, moodDone===MOOD_CH.length],
-    ["夢十夜の時期", S.yume!==null],
-    ["夢の予想", (S.yumeGuess||"").trim()],
+    ...(USE_MOOD ? [[`人生グラフ（${moodDone} / ${MOOD_CH.length}）`, moodDone===MOOD_CH.length]] : []),
+    ...(USE_AFTER ? [["夢十夜の時期", S.yume!==null], ["夢の予想", (S.yumeGuess||"").trim()]] : []),
     ["印象に残ったエピソードと理由", S.ep!==null && (S.epWhy||"").trim()]
   ];
   $("checkList").innerHTML = items.map(([t,ok])=>`<li><span>${t}</span><span class="${ok?"ok":"ng"}">${ok?"済":"まだ"}</span></li>`).join("");
@@ -612,41 +615,36 @@ function copyOut(){
 /* ---------- 共通 ---------- */
 function updateProg(){
   const sc = score(), moodDone = MOOD_CH.filter(c=>S.mood[c.no]!==undefined).length;
-  const all = totalQ + MOOD_CH.length + 3;
-  const got = sc.done + moodDone + (S.yume!==null?1:0) + ((S.yumeGuess||"").trim()?1:0) + (S.ep!==null && (S.epWhy||"").trim()?1:0);
+  const all = totalQ + MOOD_CH.length + (USE_AFTER ? 3 : 1);
+  const got = sc.done + moodDone + (USE_AFTER ? (S.yume!==null?1:0) + ((S.yumeGuess||"").trim()?1:0) : 0) + (S.ep!==null && (S.epWhy||"").trim()?1:0);
   $("progBar").style.width = (got/all*100) + "%";
   paintChNav();
 }
 function chDone(ch){
-  return ch.qs.every((q,i)=>["o","t","x"].includes(stateOf(ch.no+"-"+i))) && (!ch.mood || S.mood[ch.no]!==undefined);
+  return ch.qs.every((q,i)=>["o","t","x"].includes(stateOf(ch.no+"-"+i))) && (!ch.mood || !USE_MOOD || S.mood[ch.no]!==undefined);
 }
 function paintChNav(){
   document.querySelectorAll(".chNav button").forEach(b => {
     const no = +b.dataset.no;
-    b.classList.toggle("on", no===S.ch);
-    b.classList.toggle("done", no!==S.ch && chDone(CHAPTERS[no-1]));
+    b.classList.toggle("done", chDone(CHAPTERS[no-1]));
   });
 }
+// 章はすべて並べて表示する。番号を押すと、その章まで移る
 function showCh(no, scroll){
   S.ch = no; save();
-  document.querySelectorAll(".ch").forEach(a => a.classList.toggle("on", a.id==="ch"+no));
-  $("prevCh").disabled = no===1;
-  $("nextCh").textContent = no===CHAPTERS.length ? "② 見た後に へ →" : "次の章 →";
   paintChNav();
   if (scroll){
     const navH = document.querySelector("nav.tabs").offsetHeight;
-    window.scrollTo({top: $("chNav").getBoundingClientRect().top + window.scrollY - navH - 10});
+    window.scrollTo({top: $("ch"+no).getBoundingClientRect().top + window.scrollY - navH - 10});
   }
 }
-$("chNav").innerHTML = CHAPTERS.map(c=>`<button data-no="${c.no}" aria-label="第${c.no}章 ${c.title}">${c.no}</button>`).join("");
+$("chNav").innerHTML = CHAPTERS.map(c=>`<button data-no="${c.no}" aria-label="${chName(c)} ${c.title}">${chShort(c)}</button>`).join("");
 $("chNav").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>showCh(+b.dataset.no, true)));
-$("prevCh").addEventListener("click",()=>showCh(S.ch-1, true));
-$("nextCh").addEventListener("click",()=>{ S.ch===CHAPTERS.length ? showTab("after") : showCh(S.ch+1, true); });
 function showTab(t){
   S.tab = t; save();
   document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.toggle("on", b.dataset.tab===t));
   document.querySelectorAll("section.pane").forEach(p=>p.classList.toggle("on", p.id==="pane-"+t));
-  if (t==="after") drawGraph();
+  if (t==="after" && USE_MOOD) drawGraph();
   if (t==="submit") refreshSubmit();
   window.scrollTo({top:0});
 }
@@ -654,7 +652,16 @@ document.querySelectorAll("nav.tabs button").forEach(b=>b.addEventListener("clic
 document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.go)));
 ["kumi","ban","name"].forEach(id => { const el=$(id); el.value=S[id]||""; el.addEventListener("input",()=>{S[id]=el.value; save();}); });
 
-buildChapters(); buildAfter(); buildSubmit(); showCh(S.ch || 1, false); updateProg();
+if (!USE_MOOD) document.querySelectorAll(".mood-only").forEach(e => e.remove());
+if (!USE_AFTER){
+  document.querySelector('nav.tabs button[data-tab="after"]').remove();
+  $("pane-after").remove();
+  document.querySelector('nav.tabs button[data-tab="submit"]').textContent = "② 提出";
+  const go = document.querySelector('#pane-watch [data-go="after"]');
+  go.dataset.go = "submit"; go.textContent = "② 提出 へ進む";
+  if (S.tab === "after") S.tab = "submit";
+}
+buildChapters(); if (USE_AFTER) buildAfter(); buildSubmit(); showCh(S.ch || 1, false); updateProg();
 showTab(S.tab || "watch");
 </script>
 </body>
